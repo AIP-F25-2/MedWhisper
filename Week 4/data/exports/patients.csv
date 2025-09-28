@@ -1,0 +1,112 @@
+patient_id,gender,birthdate,deathdate,race,ethnicity,address,city,state,zip
+8c8e1c9a-b310-43c6-33a7-ad11bad21c40,M,1987-01-21,,white,nonhispanic,840 Grimes Well Apt 27,Duxbury,Massachusetts,02332
+edc17058-55fb-08c7-12df-ece93a402e50,M,1986-03-31,,white,nonhispanic,166 Funk Burg,Gardner,Massachusetts,01440
+80e7f50a-3e99-d5ac-cf97-f8a4b4f9e6c7,F,2006-02-17,,white,nonhispanic,218 Hodkiewicz Route,Ludlow,Massachusetts,00000
+782001bc-f712-50ae-04f5-9a488f3ef4aa,F,1991-10-20,,white,hispanic,113 Dooley Extension Unit 99,Hampden,Massachusetts,00000
+30e48e16-2df7-207e-7a3d-1650ef0c1ed8,F,1956-06-10,1961-04-13,white,nonhispanic,1084 Zulauf Park,Bourne,Massachusetts,02532
+04181caa-fcc1-c6c8-743e-a903eff368de,M,1981-06-26,,white,nonhispanic,581 Mueller Vista,Fitchburg,Massachusetts,01420
+a3d34c1f-5421-e078-38ec-1498a5941dbe,M,1979-10-29,,white,nonhispanic,773 Osinski Village,Dudley,Massachusetts,00000
+57b21dea-ff00-6c3e-92d9-91c7627f53b2,F,2012-08-08,,white,nonhispanic,663 Davis Mews Suite 10,Brookfield,Massachusetts,01506
+2da86d63-34ae-b887-ddff-8f6f1e6990f1,M,2001-04-14,,white,nonhispanic,1097 Langworth Harbor,Whitman,Massachusetts,00000
+9f9dbdcb-23a1-82cc-b7bc-e0e420a95bd1,F,2015-01-07,,white,nonhispanic,675 Stokes Ramp Suite 7,Springfield,Massachusetts,01151
+e83fe1b3-f94f-5591-f851-1da300e24e99,M,2025-05-27,,white,nonhispanic,310 Wisozk Boulevard,Gloucester,Massachusetts,01930
+be874504-c868-ebfd-9a77-df6b1e5ff6cc,F,1964-11-06,,white,nonhispanic,227 Torp Key Apt 83,Falmouth,Massachusetts,02540
+e6705c33-7349-8b12-484d-3b1f93227178,M,1998-05-15,,white,nonhispanic,164 Davis Underpass Apt 8,Chelsea,Massachusetts,02149
+406e8bad-81b5-7624-5b8a-4aeeb74028f5,M,1984-02-24,,asian,nonhispanic,1098 Wilkinson Annex Apt 78,Framingham,Massachusetts,01702
+5a0fd7a2-6bfd-af1e-7bb6-2060136302c3,F,1956-06-10,,white,nonhispanic,904 Nienow Branch,Bourne,Massachusetts,02532
+20802592-1c31-7339-4c4c-2fe648e1a716,M,1974-02-25,,white,nonhispanic,287 Goldner Quay Apt 23,Canton,Massachusetts,00000
+641efcda-7397-4172-c6ac-8231342fa53e,M,1971-03-16,,white,hispanic,471 Hartmann Park Unit 36,Chelsea,Massachusetts,02151
+e64918a6-528c-b49e-dff2-3cbe33266342,F,1986-03-21,,white,nonhispanic,543 Nicolas Alley Apt 53,West Tisbury,Massachusetts,00000
+a331b5bc-cbea-a205-a8bf-dbf3255ef36a,M,2006-10-02,,white,nonhispanic,857 Crist Flat,Chelmsford,Massachusetts,00000
+7757f538-bffe-a8bf-0efb-8363354aab87,F,1969-04-02,,white,nonhispanic,253 Renner Passage,Marlborough,Massachusetts,01752
+9c6ef4a8-79e8-92c4-2279-a0666694419b,F,1978-02-21,,white,nonhispanic,187 Ward Quay Apt 15,Gardner,Massachusetts,01440
+eeae0d25-5865-76b4-8ad7-9526bcf3a94d,F,2017-08-27,,white,nonhispanic,642 VonRueden Drive,New Bedford,Massachusetts,02745
+0098f2a9-2f4d-4209-778d-cb3426d85987,M,1982-05-28,,white,nonhispanic,662 Funk Burg Apt 57,Middleton,Massachusetts,00000
+3477fa4e-a09a-e779-5d56-eeb00dee758b,F,1976-02-28,,white,nonhispanic,281 Sanford Annex Unit 89,Lynn,Massachusetts,01907
+74a4cdcf-7cc0-7658-e1e0-cd1182d5f205,M,2017-09-23,,black,nonhispanic,993 Dooley Viaduct,Wellesley,Massachusetts,02492
+0c76b28e-5685-0754-12d1-b1a6b79866f7,F,1992-08-30,,white,hispanic,426 McGlynn Underpass,Stoneham,Massachusetts,02180
+3270397c-dfa3-6cea-f2ec-be21ade6c52c,M,1994-05-19,,white,nonhispanic,484 Murphy Approach Suite 9,Somerville,Massachusetts,02140
+5dbd017f-d447-9546-8610-8f7bdaa77789,F,1972-01-25,,white,nonhispanic,613 Crooks Union,Cambridge,Massachusetts,02140
+6754b3bf-f5ac-f359-fef6-87cf4b8508ab,F,2001-09-25,,white,hispanic,309 Hermiston Bypass Apt 11,Northborough,Massachusetts,01532
+f4e9b2c8-9db5-5597-a6a7-1215a638c1e2,F,1963-06-17,,white,nonhispanic,453 Dickens Branch Suite 6,Westport,Massachusetts,00000
+1c1ab155-7314-095d-1641-06efd2cd0873,M,2007-01-05,,asian,nonhispanic,208 Feil Brook,Revere,Massachusetts,02151
+c8114bff-6bab-8353-597d-4f155f5f1c3e,M,1966-03-27,,white,nonhispanic,202 Herman Skyway,Cambridge,Massachusetts,02142
+8f87d617-a91b-29e0-e155-96a5d71de419,F,1972-06-02,,white,nonhispanic,511 Kreiger Mission,Nantucket,Massachusetts,02554
+c3dae8db-25ee-c40b-c605-600fad411d34,M,1995-04-04,,white,nonhispanic,589 Hills Gateway,Holyoke,Massachusetts,01040
+8dacd3c2-9e71-7d5d-02aa-7ad9541a0ab9,M,1996-09-17,,white,nonhispanic,294 Trantow Passage,Waltham,Massachusetts,02453
+15c6645a-8f7b-df42-95ec-8b49bda12c10,M,2017-12-17,,white,hispanic,571 Robel Wall,Waltham,Massachusetts,02452
+f380d818-b685-618e-22dc-b2db2fe0a6c0,F,1954-09-03,,white,nonhispanic,690 Fay Underpass,Cambridge,Massachusetts,02139
+97a046ab-d147-2707-d4cd-cba26c5360ad,F,1966-02-07,,white,nonhispanic,275 Nicolas Station Apt 56,Boston,Massachusetts,02114
+ef2eaed0-b056-2a9f-7ccb-07a9c9fdabd5,F,1916-10-28,2004-11-25,white,nonhispanic,974 Lindgren Camp,Georgetown,Massachusetts,00000
+faec5a04-6c56-4296-9fec-4e218e627a32,M,1993-01-06,,white,nonhispanic,277 Schamberger Trace,Attleboro,Massachusetts,02703
+349720c1-0627-e77a-1619-bb11b1530e96,M,2010-06-28,,white,nonhispanic,977 Fadel Heights Suite 34,Ayer,Massachusetts,01432
+7cad1f7c-cf61-fd24-254f-d02265160c0a,F,1977-02-19,,white,nonhispanic,216 Luettgen Esplanade,Brookline,Massachusetts,02445
+37895f0e-877f-7ea7-aa1b-0b69fcd11385,M,1916-04-14,1991-04-13,black,nonhispanic,542 Romaguera Gateway Apt 42,Winchester,Massachusetts,01890
+119e46a1-9323-916b-4152-e0daedb48f23,F,1975-06-10,,white,nonhispanic,1076 Jakubowski Mill Suite 47,Springfield,Massachusetts,01128
+0db7560a-db72-0cef-c59c-1fd6762bc50d,M,1991-09-08,,white,nonhispanic,1011 Lang Esplanade Suite 13,Gloucester,Massachusetts,01930
+3f7873ab-0f61-be0c-9af8-f246eec6223a,F,1916-10-28,2000-07-30,white,nonhispanic,533 Pfannerstill Stravenue,Georgetown,Massachusetts,00000
+103b63c9-9ef8-6d25-771e-2fba661489a1,F,1973-02-24,,white,nonhispanic,169 Schaden Mall,Mendon,Massachusetts,00000
+7785daad-accb-cb33-7d8f-2faebf8eb639,F,1964-07-21,,white,nonhispanic,125 Dickinson Estate,Monument Beach,Massachusetts,02553
+13ac6eee-8cf1-e597-1c91-453c8f069a3c,M,2021-04-19,,white,nonhispanic,732 Kohler Passage,Duxbury,Massachusetts,02332
+3ac8c3a5-3c16-699f-537b-e7816347104b,F,1979-05-18,,white,nonhispanic,1012 Hessel Vale Suite 36,Devens,Massachusetts,01434
+750eda4e-3f12-c701-869e-1d392387dfa0,F,1922-06-17,1961-04-12,white,nonhispanic,140 Jerde Pathway Unit 0,Lawrence,Massachusetts,01840
+033cccaf-bc92-3ddd-b64c-9ea45268a971,F,1916-10-28,,white,nonhispanic,1064 Jakubowski Promenade Suite 51,Georgetown,Massachusetts,00000
+782ada1b-32a4-888a-8812-d8de70d6e5d0,M,1967-04-26,,native,nonhispanic,607 Nader Park Apt 29,Winthrop,Massachusetts,02152
+d423f0d1-e7ed-d47e-af4f-20cfd996ac67,F,1984-12-27,,white,nonhispanic,376 Mosciski Brook,Worcester,Massachusetts,01602
+fc3e2c0f-6809-7e7b-4ad8-769a732bf13a,F,1922-06-17,1997-02-13,white,nonhispanic,1060 Kulas Bypass,Lawrence,Massachusetts,01840
+2e2eb927-efd5-bbd4-297d-99071243a8cb,M,1977-08-28,,white,nonhispanic,1057 Wilkinson Lock Unit 97,Ocean Bluff-Brant Rock,Massachusetts,00000
+add41d13-8e70-e327-4367-8d945e20f27b,F,2010-01-30,,white,nonhispanic,822 Yost Route,Hanover,Massachusetts,00000
+7ddb0322-da41-c9d3-2018-4581109426b2,M,1983-10-16,,white,nonhispanic,263 West Mews,Lynn,Massachusetts,01905
+006c29d1-d868-3a9e-ceab-31f23e398f45,M,1983-04-06,,white,nonhispanic,634 Howe Terrace,Fairhaven,Massachusetts,00000
+add095a2-64e5-aae2-11d2-9be2f89ff843,F,1997-04-02,,white,nonhispanic,974 Lang Branch Suite 50,Chelmsford,Massachusetts,00000
+80cca49f-29f9-d04f-851d-84b95f863793,F,2003-11-15,,native,nonhispanic,1040 Mayer Stravenue,Northampton,Massachusetts,01053
+1f0ca842-8c2d-a943-c047-dafce690f5a2,F,1975-09-21,,white,nonhispanic,526 Witting Ferry Apt 59,New Bedford,Massachusetts,02744
+4faedf9f-2c0e-9800-943a-0930bd08c4c8,F,2023-01-01,,white,nonhispanic,744 West Junction Apt 14,Somerville,Massachusetts,02143
+b9bacf2f-7027-2e05-fa5b-19167071fdde,F,1973-10-12,,white,nonhispanic,818 Dibbert Lane,Canton,Massachusetts,00000
+ae05f1fa-7913-f7bc-41bd-2dc8827555e7,M,1985-02-17,,white,nonhispanic,625 Harris Bypass Apt 42,Natick,Massachusetts,00000
+583c0740-39e1-9e33-f9d6-4fdb2b815669,F,2015-03-16,,white,nonhispanic,259 Murray Frontage road,Brookline,Massachusetts,02467
+3c763653-7fd3-af8a-e65f-79d5bde98d3a,F,1970-04-09,,white,nonhispanic,851 Skiles Trafficway,Newburyport,Massachusetts,01950
+575cac8f-bed1-32da-30a6-3a516a78500d,F,1997-05-22,,white,nonhispanic,748 Carroll Skyway,Lynnfield,Massachusetts,01940
+0e5401fd-b241-3c84-066e-2b88e5ddafc7,F,1983-01-01,,white,hispanic,108 Klocko Route,Watertown,Massachusetts,02472
+9cbd97ef-2209-9b1c-b6f7-a23a6c081740,M,1984-03-24,,asian,nonhispanic,307 Towne Skyway,Canton,Massachusetts,00000
+e1c6b5c4-34b7-7296-56ed-4c634e93deb9,F,1966-11-11,,white,nonhispanic,879 Erdman Route,Yarmouth,Massachusetts,00000
+55bc1034-ecf9-d005-5b9e-eac706fe541f,F,1974-05-11,,white,nonhispanic,643 Haley Divide,Springfield,Massachusetts,01108
+1e9713a5-742f-aca0-cf95-446338fdc57f,F,2010-12-31,,white,hispanic,382 Romaguera Mill Unit 66,Boston,Massachusetts,02131
+02cb6ae2-d3fd-e497-7077-77cdbeb5f0a1,F,1974-01-27,,white,nonhispanic,973 Christiansen Annex,East Harwich,Massachusetts,02645
+3de203ff-a5b9-e99a-c705-3927503e2abf,F,1966-06-20,,white,nonhispanic,544 Hilpert Course Apt 19,Wilmington,Massachusetts,01887
+c420eb5d-97eb-59b6-b247-0ba188408db5,M,2023-04-08,,white,nonhispanic,667 Goldner Camp,Medford,Massachusetts,02155
+fd7387f3-3465-7a34-6778-25aac38a13c2,F,2013-12-29,,white,nonhispanic,874 Parker Lodge,Rehoboth,Massachusetts,00000
+b5193ef4-ab73-ddd3-e7dd-d8168b33e7f6,F,1973-05-15,1991-09-27,white,nonhispanic,726 Witting Village,Springfield,Massachusetts,01151
+1754bc7d-28cd-4933-fc72-3d9a0d77cf54,M,2003-07-19,,white,nonhispanic,1018 Morissette Station,Boston,Massachusetts,02136
+0851b7fb-87a8-3edc-1e11-8dcb03824dde,F,1973-05-15,,white,nonhispanic,161 McCullough Spur Suite 23,Springfield,Massachusetts,01128
+b61886a1-b76f-4ecf-b37a-29d0c6aefc26,M,1984-11-06,,white,nonhispanic,725 Waters Mews Unit 82,Methuen,Massachusetts,01844
+25f30c19-e98a-85ea-6de8-f976388d4678,F,2013-12-16,,white,nonhispanic,388 Wiza Drive,Wakefield,Massachusetts,01880
+0a1bd9a2-fc21-7ad3-3d85-cf31b68eec28,F,1985-08-30,,white,hispanic,968 Kautzer Mission Apt 29,Lynn,Massachusetts,01906
+6da68959-d157-b9a3-48bc-1454e5517d6a,M,1975-08-30,,white,nonhispanic,208 Pouros Union,Norfolk,Massachusetts,00000
+bd6e7acc-7c87-7f0a-5d15-959cf11e22da,F,2007-05-23,,other,nonhispanic,806 Kulas Port,Wayland,Massachusetts,00000
+48f06a5e-0d20-3fe6-f5ea-b45bc79e90db,M,2005-01-20,,white,nonhispanic,776 Bruen Parade,Webster,Massachusetts,01570
+5c68f376-dd2c-1133-a9cf-f023a5d99078,F,2017-12-20,,white,nonhispanic,381 Cruickshank Parade,Norwood,Massachusetts,02062
+e5ed5bc3-51e1-a9a7-01fb-f66b8ac4045d,M,1958-01-24,2023-11-20,white,nonhispanic,657 Sauer Green,Worcester,Massachusetts,01583
+49424eb4-e2ba-40b5-0e2b-2c2d742cce4b,M,2007-11-06,,white,nonhispanic,354 Kulas Passage,Taunton,Massachusetts,02767
+787f9e8e-d3a4-0407-55d1-01a3414fceaf,F,1922-06-17,2020-12-19,white,nonhispanic,591 Cremin Way Suite 78,Lawrence,Massachusetts,01843
+31014896-9c27-ae1a-71db-319df60ac5d3,M,1958-01-24,,white,nonhispanic,129 Zieme Parade Suite 34,Worcester,Massachusetts,01610
+04300771-e00c-e414-830a-66f7ef3584da,F,1922-06-17,2008-10-17,white,nonhispanic,352 Crona Way,Lawrence,Massachusetts,01841
+cae42a0d-c36c-8af1-8277-7c9abd011778,M,1916-04-14,,black,nonhispanic,847 Ferry Club,Winchester,Massachusetts,01890
+155b0e07-d5a9-cc0c-e01a-a982c5d9a8d6,F,1965-01-07,1969-06-02,white,nonhispanic,277 Hoppe Union Apt 5,Norton Center,Massachusetts,00000
+45e1243b-470c-efa8-8ce9-f0d50485a846,F,1922-06-17,,white,nonhispanic,1002 Wisoky Annex,Lawrence,Massachusetts,01840
+b8ded152-e326-5833-f747-bf9b35c60a76,M,1966-05-23,,white,nonhispanic,798 O'Hara Green,North Pembroke,Massachusetts,02358
+9f867ec4-9f3a-35af-4bb6-e2c18a603c72,M,1991-09-07,,white,nonhispanic,338 Kozey Dale,Brockton,Massachusetts,02302
+5f9bfe93-062d-ca4b-5389-f8cac604a7e3,F,1965-01-07,,white,nonhispanic,968 Casper Parade Unit 57,Norton Center,Massachusetts,00000
+5fda1015-d0a5-e32d-d0b8-4662e6ce6c2b,M,1948-01-16,,white,nonhispanic,605 Hermann Hollow Apt 86,Bourne,Massachusetts,02532
+b427e4ea-3a48-207a-bf7d-710f0b574091,F,2020-05-04,,white,nonhispanic,714 Konopelski Road,Swansea,Massachusetts,00000
+70775c58-59fb-a3db-9858-1d427567c195,M,1961-07-24,,white,nonhispanic,805 Feest Ville Suite 23,Weston,Massachusetts,00000
+43e4a5fe-add4-5581-d0ef-80764c313418,M,1981-03-26,,white,nonhispanic,530 Zulauf Orchard,Bliss Corner,Massachusetts,00000
+28f107b5-e973-ece3-b762-c2dbd9a01ba8,M,1952-12-07,,black,nonhispanic,717 Huel Gate Suite 59,Saugus,Massachusetts,01906
+6f808eef-a811-11eb-3fcb-1ed910d79c4b,M,1995-05-05,,white,nonhispanic,851 Lynch Mall,Billerica,Massachusetts,00000
+77dfae18-8c8c-0ec2-050c-dd93f3ea1cc2,M,1998-03-05,,white,nonhispanic,1035 Haag Course,Boston,Massachusetts,02114
+2bc26ad6-ad32-0bb0-f964-0fe271fdf054,F,1995-05-19,,white,nonhispanic,725 Johnston Road Suite 33,Lexington,Massachusetts,02420
+0fca905f-391c-08d3-4b93-b53f69b9da53,M,1978-05-01,,white,nonhispanic,646 Hermiston Junction,Brockton,Massachusetts,02351
+f49221bb-20fb-45cb-9345-09b6a83ae9de,M,1986-05-16,,white,nonhispanic,679 Lockman Manor,Watertown,Massachusetts,02472
+72b7a6b1-b196-7ba5-eb82-1e9b0f75b7bd,M,2009-01-22,,white,nonhispanic,789 Casper Mews Apt 32,Everett,Massachusetts,02148
+9ad4a69b-02de-4aeb-2262-76745583a8ac,F,2008-10-04,,black,nonhispanic,891 Donnelly Loaf Suite 60,Winchester,Massachusetts,01890
+1a9873c2-1d93-e9d6-4e36-77fdb07fbcb2,F,1920-11-02,,white,nonhispanic,399 Adams Well Suite 22,Templeton,Massachusetts,00000

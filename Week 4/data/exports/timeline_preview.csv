@@ -1,0 +1,6 @@
+patient_id,event_time,event_type,event_id,description
+ef2eaed0-b056-2a9f-7ccb-07a9c9fdabd5,1923-06-13 00:00:00-04:00,condition_onset,cond_1024,Chronic sinusitis (disorder)
+ef2eaed0-b056-2a9f-7ccb-07a9c9fdabd5,1923-06-13 01:15:47-04:00,encounter,1014a39f-54c7-c1b8-e966-90e06a616571,Encounter for symptom (procedure)
+787f9e8e-d3a4-0407-55d1-01a3414fceaf,1923-06-27 13:46:24-04:00,encounter,3eca6ba3-705e-6d6c-118a-f71ce771f3a5,Encounter for problem (procedure)
+787f9e8e-d3a4-0407-55d1-01a3414fceaf,1923-07-11 22:46:24-04:00,encounter,45ba59fb-d8ba-0de1-ad1c-92a4e5895191,Encounter for problem (procedure)
+033cccaf-bc92-3ddd-b64c-9ea45268a971,1932-12-23 22:15:47-05:00,encounter,c1d3b37c-fb74-dcba-7545-d94f3040ece9,Well child visit (procedure)
