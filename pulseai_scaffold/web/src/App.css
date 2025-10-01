@@ -1,0 +1,101 @@
+/* App.css – basic styling for the PulseAI Chatbot */
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background-color: #f5f7fa;
+  margin: 0;
+  padding: 0;
+}
+
+/* Main wrapper */
+.chat-container {
+  max-width: 640px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Title */
+.chat-container h1 {
+  margin-top: 0;
+  color: #2c3e50;
+}
+
+/* Messages area */
+.messages-box {
+  height: 400px;
+  overflow-y: auto;
+  border: 1px solid #e1e8ed;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  background-color: #fafafa;
+}
+
+/* Individual message wrapper */
+.message {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+/* Bot and user bubble common styles */
+.message .bubble {
+  padding: 10px 14px;
+  border-radius: 16px;
+  max-width: 70%;
+  word-wrap: break-word;
+  font-size: 0.95rem;
+}
+
+/* Align bubbles */
+.message.user {
+  justify-content: flex-end;
+}
+
+.message.user .bubble {
+  background-color: #4c9ffe;
+  color: #ffffff;
+  border-bottom-right-radius: 4px;
+}
+
+.message.bot .bubble {
+  background-color: #eef4fb;
+  color: #2c3e50;
+  border-bottom-left-radius: 4px;
+}
+
+/* Input area */
+.chat-input {
+  display: flex;
+  gap: 8px;
+}
+
+.chat-input input[type="text"] {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccd6dd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.chat-input button {
+  padding: 10px 18px;
+  background-color: #4caf50;
+  color: #fff;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.chat-input button:hover {
+  background-color: #3e8e41;
+}
+
+.chat-input button:disabled {
+  background-color: #9cbcd0;
+  cursor: not-allowed;
+}
