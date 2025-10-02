@@ -1,7 +1,7 @@
 /* App.css – basic styling for the PulseAI Chatbot */
 
 body {
-  font-family: 'Segoe UI', Arial, sans-serif;
+  font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
   background-color: #f5f7fa;
   margin: 0;
   padding: 0;
@@ -9,22 +9,24 @@ body {
 
 /* Main wrapper */
 .chat-container {
-  max-width: 480px;
-  margin: 40px auto;
-  background: var(--chat-bg, #f8fbff);
-  border-radius: 22px;
-  box-shadow: 0 4px 24px rgba(44, 62, 80, 0.12);
-  padding: 28px 22px 22px 22px;
+  max-width: 520px;
+  margin: 48px auto;
+  background: #f8fbff;
+  border-radius: 28px;
+  box-shadow: 0 6px 32px rgba(0, 82, 204, 0.10);
+  padding: 32px 28px 28px 28px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  border: 1px solid var(--chat-border, #e3eaf2);
+  gap: 20px;
+  border: 1.5px solid #e3eaf2;
 }
 
 /* Title */
 .chat-container h1 {
   margin-top: 0;
-  color: #2c3e50;
+  color: #0052cc;
+  font-size: 2.1rem;
+  font-weight: 700;
 }
 
 /* Messages area */
@@ -34,12 +36,12 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  background: var(--messages-bg, #eef4fb);
-  border-radius: 14px;
-  padding: 18px 12px;
-  min-height: 320px;
-  max-height: 380px;
-  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
+  background: #eef4fb;
+  border-radius: 18px;
+  padding: 22px 16px;
+  min-height: 340px;
+  max-height: 400px;
+  box-shadow: 0 2px 12px rgba(0, 82, 204, 0.07);
   scroll-behavior: smooth;
   margin-bottom: 12px;
 }
@@ -52,12 +54,12 @@ body {
 
 /* Bot and user bubble common styles */
 .message .bubble {
-  padding: 12px 16px;
-  border-radius: 18px;
-  max-width: 70%;
+  padding: 14px 20px;
+  border-radius: 22px;
+  max-width: 72%;
   word-wrap: break-word;
-  font-size: 1rem;
-  box-shadow: 0 1px 6px rgba(44, 62, 80, 0.07);
+  font-size: 1.08rem;
+  box-shadow: 0 2px 8px rgba(0, 82, 204, 0.08);
   margin-bottom: 2px;
 }
 
@@ -67,17 +69,17 @@ body {
 }
 
 .message.user .bubble {
-  background-color: var(--user-bubble, #4c9ffe);
-  color: var(--user-text, #fff);
-  border-bottom-right-radius: 6px;
-  border-top-right-radius: 6px;
+  background-color: #0052cc;
+  color: #fff;
+  border-bottom-right-radius: 10px;
+  border-top-right-radius: 10px;
 }
 
 .message.bot .bubble {
-  background-color: var(--bot-bubble, #fff);
-  color: var(--bot-text, #2c3e50);
-  border-bottom-left-radius: 6px;
-  border-top-left-radius: 6px;
+  background-color: #fff;
+  color: #0052cc;
+  border-bottom-left-radius: 10px;
+  border-top-left-radius: 10px;
 }
 
 /* Input area */
@@ -88,42 +90,42 @@ body {
 
 .chat-input input[type="text"] {
   flex: 1;
-  padding: 10px;
-  border: 1px solid #ccd6dd;
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: 12px;
+  border: 1.5px solid #ccd6dd;
+  border-radius: 12px;
+  font-size: 1.08rem;
 }
 
 .chat-input button {
-  padding: 12px 22px;
-  background-color: var(--send-btn, #4caf50);
+  padding: 12px 28px;
+  background-color: #0052cc;
   color: #fff;
-  font-weight: bold;
+  font-weight: 600;
   border: none;
-  border-radius: 10px;
+  border-radius: 14px;
   cursor: pointer;
-  font-size: 1.08rem;
+  font-size: 1.12rem;
   transition: background-color 0.2s;
-  box-shadow: 0 1px 4px rgba(44, 62, 80, 0.08);
+  box-shadow: 0 2px 8px rgba(0, 82, 204, 0.10);
 }
 
 .chat-input button:hover {
-  background-color: var(--send-btn-hover, #3e8e41);
+  background-color: #003d99;
 }
 
 .chat-input button:disabled {
-  background-color: var(--send-btn-disabled, #9cbcd0);
+  background-color: #b3c6e6;
   cursor: not-allowed;
 }
 
 /* Disclaimer styling for chat UI */
 .note {
-  font-size: 0.95rem;
-  color: var(--disclaimer-text, #6c7a89);
-  background: var(--disclaimer-bg, #eaf0fa);
-  border-radius: 8px;
-  padding: 8px 12px;
+  font-size: 0.98rem;
+  color: #0052cc;
+  background: #eaf0fa;
+  border-radius: 10px;
+  padding: 10px 16px;
   text-align: center;
-  margin: 10px 0 0 0;
-  border: 1px solid var(--disclaimer-border, #dbe6f7);
+  margin: 14px 0 0 0;
+  border: 1.5px solid #dbe6f7;
 }

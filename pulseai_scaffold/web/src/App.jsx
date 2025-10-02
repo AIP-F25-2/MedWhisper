@@ -117,7 +117,7 @@ export default function App() {
         )}
       </div>
       <div className="note">
-        Educational use only. Not medical advice.
+        This chatbot is for informational and educational purposes only. It does not provide medical advice, diagnosis, or treatment. Always consult a qualified healthcare professional for medical concerns.
       </div>
       <form onSubmit={send} className="chat-input">
         <input
