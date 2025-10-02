@@ -1,0 +1,11 @@
+{
+  "db": "C:\\Users\\theja\\MedWhisper\\Week 4\\medwhisper.db",
+  "sql": "SELECT observation_id AS id, CONCAT_WS(' ', COALESCE(code,''), COALESCE(description,''), COALESCE(CAST(value AS VARCHAR),''), COALESCE(unit,'')) AS text FROM observations_curated WHERE code IS NOT NULL OR description IS NOT NULL OR value IS NOT NULL OR unit IS NOT NULL",
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "normalize": true,
+  "chunk_size": 220,
+  "chunk_overlap": 40,
+  "embeddings_dim": 384,
+  "faiss_index_path": "C:\\Users\\theja\\MedWhisper\\Week 5\\index\\faiss.index",
+  "docstore_path": "C:\\Users\\theja\\MedWhisper\\Week 5\\index\\docstore.parquet"
+}
