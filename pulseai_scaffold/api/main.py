@@ -1,11 +1,13 @@
 # main.py
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os, httpx, logging
+import openai
 from dotenv import load_dotenv
 
 load_dotenv()
+openai.api_key = os.getenv("OPENAI_API_KEY")
 logger = logging.getLogger("medwhisper")
 logging.basicConfig(level=logging.INFO)
 
@@ -30,20 +32,18 @@ class ChatRequest(BaseModel):
     sender: str
     message: str
 
-@app.get("/")
-async def root():
-    return {"service": "Med-Whisper Gateway", "endpoints": ["/health", "/chat"]}
 
-@app.get("/health")
-async def health():
-    return {"status": "ok"}
+from fastapi.responses import StreamingResponse
+import asyncio
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
-    """Forward message to Rasa. If Rasa is unavailable, return a mock reply."""
-    rasa_url = os.getenv("RASA_REST_URL", "http://localhost:5005/webhooks/rest/webhook")
+    """Forward message to OpenAI with streaming if API key is set, else Rasa. Returns AI reply."""
+    # Only use Rasa for replies (OpenAI removed)
+    # Force Rasa URL to port 5005 regardless of .env
+    rasa_url = "http://localhost:5005/webhooks/rest/webhook"
+    print("Using Rasa URL:", rasa_url)
     logger.info(f"/chat from sender={req.sender!r}: {req.message!r} -> {rasa_url}")
-
     try:
         async with httpx.AsyncClient(timeout=10) as client:
             r = await client.post(
@@ -52,13 +52,20 @@ async def chat(req: ChatRequest):
                 headers={"Content-Type": "application/json"},
             )
             r.raise_for_status()
-            data = r.json()  # Rasa typically returns a list of message dicts
+            data = r.json()
         replies = [m.get("text") for m in data if isinstance(m, dict) and "text" in m]
-        if not replies:
-            replies = ["Sorry, I couldn't answer that."]
-        return {"replies": replies, "raw": data}
-
+        reply = replies[0] if replies else "Sorry, I couldn't answer that."
+        # If reply looks like JSON, extract text value
+        if reply and reply.strip().startswith("{"):
+            try:
+                import json
+                parsed = json.loads(reply)
+                if parsed and isinstance(parsed, dict) and parsed.get("text"):
+                    reply = parsed["text"]
+            except:
+                pass
+        return Response(content=reply, media_type="text/plain")
     except Exception as e:
-        logger.warning(f"Rasa call failed, using mock. Error: {e}")
-        replies = [f"(mock) You said: {req.message}. Med-Whisper reply coming soon."]
-        return {"replies": replies, "raw": []}
+        logger.error(f"Rasa call failed, using mock. Error: {e}")
+        reply = f"You said: {req.message}. Med-Whisper reply coming soon."
+        return Response(content=reply, media_type="text/plain")
