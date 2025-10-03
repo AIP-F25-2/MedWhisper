@@ -1,11 +1,3 @@
-
-
-
-
-
-
-
-
 # PulseAI Scaffold
 
 Clinical AI chatbot.
@@ -81,10 +73,6 @@ Check out the `docs/` folder for step-by-step instructions, environment setup, a
 - Disclaimer updated for educational/informational use
 - GitHub repository cleaned of secrets and .env files using BFG Repo-Cleaner
 - README file completed and improved for clarity and onboarding
-
-## Contributing
-
-We welcome pull requests and issues! If you have ideas, suggestions, or want to help, please see `docs/CONTRIBUTING.md` for guidelines.
 
 ## License & Disclaimer
 
