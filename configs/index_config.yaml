@@ -1,0 +1,47 @@
+# ---- Paths ----
+db_path: "../Week 4/medwhisper.db"        #  Week-4 DuckDB file
+index_dir: "index"                        # Week-6 outputs will be saved here
+log_dir: "logs"
+metrics_file: "metrics.json"
+
+# ---- DocStore (reuse Week-5 docstore directly) ----
+docstore:
+  prefer_existing: true
+  source_path: "../Week 5/index/docstore.parquet"    # path to your Week-5 docstore
+  filename: "docstore.parquet"                       # Week-6 copy (inside Week 6/index)
+
+# ---- BM25 ----
+bm25:
+  enabled: true
+  filename: "bm25_index.joblib"
+
+# ---- FAISS ----
+faiss:
+  enabled: true
+  model_name: "sentence-transformers/all-MiniLM-L6-v2"   # simple, fast
+  # model_name: "pritamdeka/S-BioM-Bert-SNLI"            # switch later for clinical
+  batch_size: 128
+  normalize: true
+  index_type: "IndexFlatIP"
+  filename: "faiss.index"
+
+# ---- Validation ----
+validation:
+  topk: 5
+  queries:
+    - "asthma"
+    - "type 2 diabetes"
+    - "chest pain"
+    - "hypertension medication"
+    - "shortness of breath"
+  hybrid_alpha: 0.6
+
+# ---- DuckDB outputs ----
+duckdb:
+  write_docstore: true
+  save_metadata: true
+  save_validation: true
+  tables:
+    docstore: "DocStore"
+    index_metadata: "IndexMetadata"
+    validation_results: "RetrievalValidation"
