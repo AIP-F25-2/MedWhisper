@@ -102,34 +102,67 @@ export default function App() {
   }
 
   return (
-    <div className="chat-container">
-      <h1>PulseAI Chatbot</h1>
-      <div ref={boxRef} className="messages-box">
-        {messages.map((m, i) => (
-          <div key={i} className={`message ${m.from}`}>
-            <div className="bubble">{m.text}</div>
-          </div>
-        ))}
-        {typing && (
-          <div className="message bot">
-            <div className="bubble">{typing}<span className="typing-cursor">|</span></div>
-          </div>
-        )}
+    <div className="app-bg">
+      <div className="chat-header">
+        <h1>PulseAI Chatbot</h1>
       </div>
-      <div className="note">
-        This chatbot is for informational and educational purposes only. It does not provide medical advice, diagnosis, or treatment. Always consult a qualified healthcare professional for medical concerns.
+      <div className="chat-container">
+        <div ref={boxRef} className="messages-box">
+          {messages.map((m, i) => (
+            <div key={i} className={`message ${m.from} fade-in`}>
+              <div className="avatar">
+                {m.from === "bot" ? (
+                  <span role="img" aria-label="Bot">🤖</span>
+                ) : (
+                  <span role="img" aria-label="User">🧑</span>
+                )}
+              </div>
+              <div className="bubble">{m.text}</div>
+            </div>
+          ))}
+          {typing && (
+            <div className="message bot fade-in">
+              <div className="avatar">
+                <span role="img" aria-label="Bot">🤖</span>
+              </div>
+              <div className="bubble">{typing}<span className="typing-cursor">|</span></div>
+            </div>
+          )}
+        </div>
+        <div className="note">
+          This chatbot is for informational and educational purposes only. It does not provide medical advice, diagnosis, or treatment. Always consult a qualified healthcare professional for medical concerns.
+        </div>
+        <form onSubmit={send} className="chat-input">
+          <button type="button" className="icon-btn" tabIndex={-1} title="Voice input (coming soon)" disabled>
+            <span role="img" aria-label="Microphone">🎤</span>
+          </button>
+          <input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={busy ? "Thinking..." : "Type your question"}
+            disabled={busy}
+          />
+          <button type="button" className="icon-btn" tabIndex={-1} title="Emoji picker (coming soon)" disabled>
+            <span role="img" aria-label="Emoji">😊</span>
+          </button>
+          <button type="submit" className="send-btn" disabled={busy}>
+            {busy ? "..." : "Send"}
+          </button>
+        </form>
+        <div className="quick-replies">
+          {['What are the symptoms of flu?', 'How to prevent COVID-19?', 'What is a healthy diet?', 'When should I see a doctor?'].map((q, idx) => (
+            <button
+              key={idx}
+              className="quick-reply-btn"
+              type="button"
+              onClick={() => setInput(q)}
+              disabled={busy}
+            >
+              {q}
+            </button>
+          ))}
+        </div>
       </div>
-      <form onSubmit={send} className="chat-input">
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder={busy ? "Thinking..." : "Type your question"}
-          disabled={busy}
-        />
-        <button type="submit" disabled={busy}>
-          {busy ? "..." : "Send"}
-        </button>
-      </form>
     </div>
   );
 }
