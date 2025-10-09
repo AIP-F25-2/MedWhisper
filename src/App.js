@@ -7,6 +7,7 @@ import Footer from './components/Footer';
 import HoursBanner from './components/HoursBanner';
 import AppointmentSection from './components/AppointmentSection';
 import TransformBanner from './components/TransformBanner';
+import Chatbot from './components/Chatbot';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Team />
       </main>
       <Footer />
+      <Chatbot />
     </div>
   );
 }

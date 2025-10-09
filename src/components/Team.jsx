@@ -2,13 +2,13 @@ import React from 'react';
 
 const Team = () => {
   const teamMembers = [
-    { name: 'Taranjot Singh Bindra', role: 'Team Lead', image: '/team1.jpg' },
-    { name: 'Mitalben Jayantibhai Pethani', role: 'Technical Lead', image: '/team2.jpg' },
-    { name: 'Dhruv Dinesh Boricha', role: 'Computer Vision Engineer', image: '/team3.jpg' },
-    { name: 'Neha Tamang', role: 'Visualization & UI/UX Designer', image: '/team4.jpg' },
-    { name: 'Paramjit Singh', role: 'Front-end Developer', image: '/team5.jpg' },
-    { name: 'Indraja Badepalli', role: 'Machine Learning Engineer', image: '/team6.jpg' },
-    { name: 'Thejaswee Badepalle', role: 'Data Engineer', image: '/team7.jpg' },
+    { name: 'Taranjot Singh Bindra', role: 'Team Lead', image: '/Taran.jpg' },
+    { name: 'Mitalben Jayantibhai Pethani', role: 'Technical Lead', image: '/Mittal.jpg' },
+    { name: 'Dhruv Dinesh Boricha', role: 'Computer Vision Engineer', image: '/Dhruv.jpg' },
+    { name: 'Neha Tamang', role: 'Visualization & UI/UX Designer', image: '/Neha.png' },
+    { name: 'Paramjit Singh', role: 'Front-end Developer', image: '/Param.jpg' },
+    { name: 'Indraja Badepalli', role: 'Machine Learning Engineer', image: '/Indraja.jpg' },
+    { name: 'Thejaswee Badepalle', role: 'Data Engineer', image: '/Tejasvee.jpg' },
   ];
 
   return (
@@ -26,9 +26,17 @@ const Team = () => {
               {teamMembers.map((member, index) => (
                 <div key={member.name} className="text-center">
                   <div className="w-32 h-32 mx-auto mb-4 rounded-xl border-2 border-blue-200 overflow-hidden bg-slate-100">
-                    <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">
-                      Photo
-                    </div>
+                    {member.image ? (
+                      <img 
+                        src={member.image} 
+                        alt={member.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">
+                        Photo
+                      </div>
+                    )}
                   </div>
                   <h3 className="text-lg font-bold text-white mb-1">{member.name}</h3>
                   <p className="text-sm text-white/80">{member.role}</p>
