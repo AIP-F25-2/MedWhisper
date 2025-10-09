@@ -33,7 +33,8 @@ class ChatRequest(BaseModel):
     message: str
 
 
-from fastapi.responses import StreamingResponse
+
+from fastapi.responses import StreamingResponse, JSONResponse
 import asyncio
 
 @app.post("/chat")
@@ -52,7 +53,12 @@ async def chat(req: ChatRequest):
                 headers={"Content-Type": "application/json"},
             )
             r.raise_for_status()
-            data = r.json()
+            logger.info(f"Raw Rasa response: {r.text}")
+            try:
+                data = r.json()
+            except Exception as json_err:
+                logger.error(f"JSON decode error: {json_err}. Raw response: {r.text}")
+                return JSONResponse(content={"replies": [f"Rasa returned invalid JSON: {r.text}"]})
         replies = [m.get("text") for m in data if isinstance(m, dict) and "text" in m]
         reply = replies[0] if replies else "Sorry, I couldn't answer that."
         # If reply looks like JSON, extract text value
@@ -62,10 +68,11 @@ async def chat(req: ChatRequest):
                 parsed = json.loads(reply)
                 if parsed and isinstance(parsed, dict) and parsed.get("text"):
                     reply = parsed["text"]
-            except:
+            except Exception as inner_json_err:
+                logger.error(f"Inner JSON decode error: {inner_json_err}. Raw reply: {reply}")
                 pass
-        return Response(content=reply, media_type="text/plain")
+        return JSONResponse(content={"replies": [reply]})
     except Exception as e:
         logger.error(f"Rasa call failed, using mock. Error: {e}")
         reply = f"You said: {req.message}. Med-Whisper reply coming soon."
-        return Response(content=reply, media_type="text/plain")
+        return JSONResponse(content={"replies": [reply]})

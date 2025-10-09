@@ -1,0 +1,27 @@
+User: hello
+Bot: Hey! How are you?
+---
+User: just oka
+Bot: Great, carry on!
+---
+User: Hello
+Bot: Hey! How are you?
+---
+User: Not well
+Bot: Here is something to cheer you up:
+---
+User: 🙅‍♂
+Bot: Great, carry on!
+---
+User: What carry on
+Bot: I’m a virtual assistant here to provide general information.
+---
+User: Ok got it
+Bot: Great, carry on!
+---
+User: hii
+Bot: Hey! How are you?
+---
+User: hello
+Bot: Hey! How are you?
+---
