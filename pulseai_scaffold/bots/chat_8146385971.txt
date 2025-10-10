@@ -25,3 +25,21 @@ Bot: Hey! How are you?
 User: hello
 Bot: Hey! How are you?
 ---
+User: hi
+Bot: No response
+---
+User: hi
+Bot: Hey! How are you?
+---
+User: hi
+Bot: No response
+---
+User: hello
+Bot: Hey! How are you?
+---
+User: hello
+Bot: No response
+---
+User: hi
+Bot: Hey! How are you?
+---

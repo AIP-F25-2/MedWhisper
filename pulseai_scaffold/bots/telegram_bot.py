@@ -49,7 +49,9 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     try:
         r = requests.post(f"{API_BASE}/chat", json={"sender": user_id, "message": msg})
         data = r.json()
-        reply = data["replies"][0] if data.get("replies") else "No response"
+        reply = data.get("text", "").strip()
+        if not reply:
+            reply = "No response"
     except Exception as e:
         reply = f"Error: {e}"
     # Save chat history
@@ -100,7 +102,7 @@ async def handle_voice_message(update: Update, context: ContextTypes.DEFAULT_TYP
         try:
             r = requests.post(f"{API_BASE}/chat", json={"sender": user_id, "message": text})
             data = r.json()
-            reply = data["replies"][0] if data.get("replies") else "No response"
+            reply = data["text"] if data.get("text") else "No response"
         except Exception as e:
             reply = f"Error: {e}"
         # Save chat history

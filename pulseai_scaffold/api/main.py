@@ -45,34 +45,33 @@ async def chat(req: ChatRequest):
     rasa_url = "http://localhost:5005/webhooks/rest/webhook"
     print("Using Rasa URL:", rasa_url)
     logger.info(f"/chat from sender={req.sender!r}: {req.message!r} -> {rasa_url}")
-    try:
-        async with httpx.AsyncClient(timeout=10) as client:
-            r = await client.post(
-                rasa_url,
-                json={"sender": req.sender, "message": req.message},
-                headers={"Content-Type": "application/json"},
-            )
-            r.raise_for_status()
-            logger.info(f"Raw Rasa response: {r.text}")
+    async with httpx.AsyncClient(timeout=10) as client:
+        r = await client.post(
+            rasa_url,
+            json={"sender": req.sender, "message": req.message},
+            headers={"Content-Type": "application/json"},
+        )
+        r.raise_for_status()
+        logger.info(f"Raw Rasa response: {r.text}")
+        data = r.json()
+    replies = [m.get("text") for m in data if isinstance(m, dict) and "text" in m]
+    reply = replies[0] if replies else "Sorry, I couldn't answer that."
+
+    # Recursively unwrap reply if it is a JSON string with 'replies' or 'text'
+    def extract_plain_text(val):
+        import json
+        if isinstance(val, str) and val.strip().startswith("{"):
             try:
-                data = r.json()
-            except Exception as json_err:
-                logger.error(f"JSON decode error: {json_err}. Raw response: {r.text}")
-                return JSONResponse(content={"replies": [f"Rasa returned invalid JSON: {r.text}"]})
-        replies = [m.get("text") for m in data if isinstance(m, dict) and "text" in m]
-        reply = replies[0] if replies else "Sorry, I couldn't answer that."
-        # If reply looks like JSON, extract text value
-        if reply and reply.strip().startswith("{"):
-            try:
-                import json
-                parsed = json.loads(reply)
-                if parsed and isinstance(parsed, dict) and parsed.get("text"):
-                    reply = parsed["text"]
+                parsed = json.loads(val)
+                if isinstance(parsed, dict):
+                    if parsed.get("text") and isinstance(parsed["text"], str):
+                        return extract_plain_text(parsed["text"])
+                    if parsed.get("replies") and isinstance(parsed["replies"], list) and parsed["replies"]:
+                        return extract_plain_text(parsed["replies"][0])
             except Exception as inner_json_err:
-                logger.error(f"Inner JSON decode error: {inner_json_err}. Raw reply: {reply}")
+                logger.error(f"Inner JSON decode error: {inner_json_err}. Raw reply: {val}")
                 pass
-        return JSONResponse(content={"replies": [reply]})
-    except Exception as e:
-        logger.error(f"Rasa call failed, using mock. Error: {e}")
-        reply = f"You said: {req.message}. Med-Whisper reply coming soon."
-        return JSONResponse(content={"replies": [reply]})
+        return val
+
+    reply = extract_plain_text(reply)
+    return JSONResponse(content={"text": reply})

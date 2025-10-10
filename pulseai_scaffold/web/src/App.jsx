@@ -72,22 +72,12 @@ export default function App() {
       } else {
         // Fallback: normal JSON response
         const data = await res.json();
-        // Only display the main reply text, ignore raw/extra info
+        // Use the new backend format: { text: reply }
         let reply = "";
-        if (Array.isArray(data?.replies) && data.replies.length) {
-          reply = data.replies[0];
+        if (typeof data?.text === "string") {
+          reply = data.text;
         } else if (typeof data === "string") {
-          // If reply looks like JSON, try to extract the text value
-          try {
-            const parsed = JSON.parse(data);
-            if (parsed && typeof parsed === "object" && parsed.text) {
-              reply = parsed.text;
-            } else {
-              reply = data;
-            }
-          } catch {
-            reply = data;
-          }
+          reply = data;
         } else {
           reply = "Sorry, I couldn’t answer that.";
         }
