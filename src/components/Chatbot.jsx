@@ -121,7 +121,9 @@ const Chatbot = () => {
       {/* Chat Window */}
       <div
         className={`mb-4 bg-white rounded-2xl shadow-2xl transition-all duration-300 transform ${
-          isOpen ? 'scale-100 opacity-100' : 'scale-0 opacity-0'
+          isOpen 
+            ? 'translate-x-0 translate-y-0 scale-100 opacity-100' 
+            : 'translate-x-full translate-y-full scale-0 opacity-0'
         }`}
         style={{
           width: '380px',
