@@ -14,7 +14,7 @@ const CtaBanner = () => {
             Get Started
           </a>
           <a href="#login" className="px-6 py-3 rounded-xl bg-[#2B6FDF] text-white hover:bg-[#2a63c4]">
-            Login In
+            Login
           </a>
         </div>
       </div>

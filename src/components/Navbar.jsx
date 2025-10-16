@@ -14,7 +14,7 @@ const Navbar = () => {
         </nav>
         <div className="hidden md:flex items-center gap-4 text-[18px]">
           <a href="#GetStarted" className="px-5 py-2 rounded-lg bg-[#2B6FDF] text-white hover:bg-[#2a63c4]">Get Started</a>
-          <button type="button" className="px-5 py-2 rounded-lg border border-white text-white hover:bg-white/10">Login In</button>
+          <button type="button" className="px-5 py-2 rounded-lg border border-white text-white hover:bg-white/10">Login</button>
         </div>
       </div>
     </header>

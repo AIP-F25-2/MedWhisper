@@ -26,9 +26,25 @@ const Home = () => {
               </a>
             </div>
           </div>
-          <div className="relative">
-            <div className="rounded-2xl overflow-hidden ring-1 ring-white/20 shadow-xl bg-white">
-              <img src="/Dashboard.png" alt="Product dashboard" className="w-full h-auto" />
+          <div className="relative flex justify-center items-center">
+            <div className="relative rounded-2xl overflow-hidden ring-1 ring-white/20 shadow-xl bg-transparent w-[520px] sm:w-[680px] md:w-[840px] lg:w-[920px] h-[420px] sm:h-[520px] md:h-[600px] lg:h-[640px]">
+              {/* blurred background to fill gaps and match the image */}
+              <div
+                className="absolute inset-0 bg-center bg-cover transform scale-105 filter blur-lg"
+                style={{ backgroundImage: "url('/Dashboard.png')" }}
+                aria-hidden="true"
+              />
+              {/* optional dark overlay so the background doesn't overpower the foreground image */}
+              <div className="absolute inset-0 bg-black/30" aria-hidden="true" />
+
+              {/* foreground image: object-contain so full image is visible without cropping */}
+              <div className="relative z-10 flex justify-center items-center h-full p-4">
+                <img
+                  src="/Dashboard.png"
+                  alt="Product dashboard"
+                  className="w-full h-full max-h-full object-contain block"
+                />
+              </div>
             </div>
           </div>
         </div>
