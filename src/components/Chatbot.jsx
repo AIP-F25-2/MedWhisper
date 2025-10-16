@@ -12,6 +12,7 @@ const Chatbot = () => {
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [lastSeenMessageId, setLastSeenMessageId] = useState(1); // Track the last seen message
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
@@ -101,7 +102,14 @@ const Chatbot = () => {
   };
 
   const toggleChat = () => {
-    setIsOpen(!isOpen);
+    const newIsOpen = !isOpen;
+    setIsOpen(newIsOpen);
+    
+    // When opening the chat, mark all current messages as seen
+    if (newIsOpen && messages.length > 0) {
+      const latestMessage = messages[messages.length - 1];
+      setLastSeenMessageId(latestMessage.id);
+    }
   };
 
   const formatTime = (date) => {
@@ -260,12 +268,15 @@ const Chatbot = () => {
         )}
       </button>
 
-      {/* Notification Badge (optional) */}
-      {!isOpen && messages.length > 1 && (
-        <div className="absolute top-0 right-0 bg-red-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold animate-bounce">
-          {messages.filter(m => m.sender === 'bot').length - 1}
-        </div>
-      )}
+      {/* Notification Badge - only show unseen bot messages */}
+      {!isOpen && (() => {
+        const unseenBotMessages = messages.filter(m => m.sender === 'bot' && m.id > lastSeenMessageId);
+        return unseenBotMessages.length > 0 && (
+          <div className="absolute top-0 right-0 bg-red-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold animate-bounce">
+            {unseenBotMessages.length}
+          </div>
+        );
+      })()}
     </div>
   );
 };
