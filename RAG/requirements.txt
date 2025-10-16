@@ -1,0 +1,15 @@
+fastapi
+uvicorn
+pydantic
+requests
+pandas
+numpy
+sentence-transformers
+llama-index-llms-gemini
+llama-index
+google-generativeai
+python-dotenv
+prometheus-fastapi-instrumentator
+python-json-logger
+
+
