@@ -1,0 +1,63 @@
+User: hello
+Bot: Hey! How are you?
+---
+User: just oka
+Bot: Great, carry on!
+---
+User: Hello
+Bot: Hey! How are you?
+---
+User: Not well
+Bot: Here is something to cheer you up:
+---
+User: 🙅‍♂
+Bot: Great, carry on!
+---
+User: What carry on
+Bot: I’m a virtual assistant here to provide general information.
+---
+User: Ok got it
+Bot: Great, carry on!
+---
+User: hii
+Bot: Hey! How are you?
+---
+User: hello
+Bot: Hey! How are you?
+---
+User: hi
+Bot: No response
+---
+User: hi
+Bot: Hey! How are you?
+---
+User: hi
+Bot: No response
+---
+User: hello
+Bot: Hey! How are you?
+---
+User: hello
+Bot: No response
+---
+User: hi
+Bot: Hey! How are you?
+---
+User: What are the symptoms of flu?
+Bot: COVID-19 is a viral infection. Symptoms include fever, cough, and loss of taste or smell. Prevention includes vaccination and hygiene.
+---
+User: How to prevent COVID-19?
+Bot: To avoid allergies, identify and avoid triggers, keep your environment clean, and consult a doctor for severe symptoms.
+---
+User: What is a healthy diet?
+Bot: A healthy diet includes a variety of fruits, vegetables, whole grains, lean proteins, and healthy fats. Limit processed foods, sugar, and salt.
+---
+User: When should I see a doctor?
+Bot: If you have severe or persistent symptoms, it’s best to consult a doctor. When in doubt, seek professional medical advice.
+---
+User: //start
+Bot: A tetanus antitoxin injection was administered on May 20, 2019, following wound management. During a follow-up visit one day later, the patient's vitals were stable.
+---
+User: What causes chest pain?
+Bot: Chest pain can arise from a wide range of conditions, including cardiac issues like heart attack or angina, and pulmonary problems such as pneumonia or pleurisy. Gastrointestinal causes like GERD, musculoskeletal strain, and anxiety or panic attacks are also common contributors to chest discomfort. Any new or severe chest pain warrants prompt medical evaluation to determine the underlying cause.
+---
