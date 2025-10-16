@@ -22,13 +22,13 @@ const Navbar = () => {
   return (
     <>
       <header className="sticky top-0 z-50 bg-[#014A93] text-white">
-        <div className="w-full mx-auto px-[50px] h-[140px] flex items-center justify-between mt-[20px]">
+        <div className="w-full mx-auto px-[50px] h-[140px] flex items-center justify-between">
           <a href="#home" className="flex items-center gap-3">
             <img src="/LOGO.png" alt="PulseAI logo" className="h-[116px] w-[116px] rounded-md object-contain" />
           </a>
           <nav className="hidden md:flex items-center gap-10 text-[18px]">
             <a href="#home" className="hover:text-white/80">Home</a>
-            <a href="#features" className="hover:text-white/80">Features</a>
+            <a href="#howitworks" className="hover:text-white/80">Features</a>
             <a href="#team" className="hover:text-white/80">Team</a>
           </nav>
           <div className="hidden md:flex items-center gap-4 text-[18px]">
