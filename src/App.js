@@ -22,8 +22,8 @@ function App() {
         <TransformBanner />
         <Team />
       </main>
-      <Footer />
       <Chatbot />
+      <Footer />
     </div>
   );
 }

@@ -13,8 +13,15 @@ const Chatbot = () => {
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [lastSeenMessageId, setLastSeenMessageId] = useState(1); // Track the last seen message
+  const [position, setPosition] = useState({ 
+    x: window.innerWidth - 400, // Position to show full chat window (380px width + margin)
+    y: window.innerHeight - 620 // Position to show full chat window (600px height + margin)
+  });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const chatContainerRef = useRef(null);
 
   const API_BASE = 'http://localhost:8001';
   const userId = 'web-user-' + Math.random().toString(36).substr(2, 9);
@@ -40,6 +47,68 @@ const Chatbot = () => {
       inputRef.current.focus();
     }
   }, [isOpen]);
+
+  // Handle drag functionality
+  const handleMouseDown = (e) => {
+    if (e.target.closest('button')) return; // Don't drag if clicking on buttons
+    setIsDragging(true);
+    const rect = chatContainerRef.current?.getBoundingClientRect();
+    if (rect) {
+      setDragOffset({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top,
+      });
+    }
+    e.preventDefault();
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    
+    const newX = e.clientX - dragOffset.x;
+    const newY = e.clientY - dragOffset.y;
+    
+    // Keep within viewport bounds - ensure full chat window is visible
+    const maxX = window.innerWidth - 380; // Chat window width (380px)
+    const maxY = window.innerHeight - 600; // Chat window height (600px)
+    
+    setPosition({
+      x: Math.max(0, Math.min(newX, maxX)),
+      y: Math.max(0, Math.min(newY, maxY)),
+    });
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  // Add global mouse event listeners for dragging
+  useEffect(() => {
+    if (isDragging) {
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      return () => {
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+    }
+  }, [isDragging, dragOffset]);
+
+  // Handle window resize to keep chat window in bounds
+  useEffect(() => {
+    const handleResize = () => {
+      const maxX = window.innerWidth - 380;
+      const maxY = window.innerHeight - 600;
+      
+      setPosition(prev => ({
+        x: Math.min(prev.x, maxX),
+        y: Math.min(prev.y, maxY)
+      }));
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const sendMessage = async (messageText) => {
     if (!messageText.trim()) return;
@@ -117,7 +186,15 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="fixed bottom-4 right-2 z-50">
+    <div 
+      ref={chatContainerRef}
+      className="fixed z-50"
+      style={{
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+        cursor: isDragging ? 'grabbing' : 'default',
+      }}
+    >
       {/* Chat Window */}
       <div
         className={`mb-4 bg-white rounded-2xl shadow-2xl transition-all duration-300 transform ${
@@ -130,6 +207,7 @@ const Chatbot = () => {
           height: '600px',
           transformOrigin: 'bottom right',
         }}
+        onMouseDown={handleMouseDown}
       >
         {/* Chat Header */}
         <div className="bg-gradient-to-r from-[#014A93] to-[#2B6FDF] text-white p-4 rounded-t-2xl flex items-center justify-between">
@@ -249,7 +327,15 @@ const Chatbot = () => {
       {/* Floating Chat Button */}
       <button
         onClick={toggleChat}
-        className="bg-gradient-to-r from-[#014A93] to-[#2B6FDF] text-white w-16 h-16 rounded-full shadow-2xl hover:shadow-3xl transition-all transform hover:scale-110 flex items-center justify-center group"
+        className={`bg-gradient-to-r from-[#014A93] to-[#2B6FDF] text-white w-16 h-16 rounded-full shadow-2xl hover:shadow-3xl transition-all transform hover:scale-110 flex items-center justify-center group ${
+          isDragging ? 'cursor-grabbing' : 'cursor-pointer'
+        }`}
+        style={{
+          position: 'fixed',
+          bottom: '20px',
+          right: '20px',
+          zIndex: 1000,
+        }}
       >
         {isOpen ? (
           <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -274,7 +360,15 @@ const Chatbot = () => {
       {!isOpen && (() => {
         const unseenBotMessages = messages.filter(m => m.sender === 'bot' && m.id > lastSeenMessageId);
         return unseenBotMessages.length > 0 && (
-          <div className="absolute top-0 right-0 bg-red-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold animate-bounce">
+          <div 
+            className="absolute bg-red-500 text-white text-xs w-6 h-6 rounded-full flex items-center justify-center font-bold animate-bounce"
+            style={{
+              top: '-8px',
+              right: '-8px',
+              position: 'fixed',
+              zIndex: 1001,
+            }}
+          >
             {unseenBotMessages.length}
           </div>
         );
