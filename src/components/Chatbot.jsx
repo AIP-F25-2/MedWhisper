@@ -170,6 +170,7 @@ const Chatbot = () => {
     sendMessage(reply);
   };
 
+
   const toggleChat = () => {
     const newIsOpen = !isOpen;
     setIsOpen(newIsOpen);
@@ -311,6 +312,9 @@ const Chatbot = () => {
               placeholder="Type your message..."
               className="flex-1 px-4 py-2.5 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#014A93] focus:border-transparent text-sm"
             />
+            
+
+            {/* Send Button */}
             <button
               type="submit"
               disabled={!inputMessage.trim() || isTyping}
@@ -321,6 +325,7 @@ const Chatbot = () => {
               </svg>
             </button>
           </form>
+          
         </div>
       </div>
 
