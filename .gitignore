@@ -21,3 +21,71 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Environment variables
+.env
+.env.*
+!.env.example
+*.env
+
+# Node modules
+node_modules/
+**/node_modules/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+*.egg
+venv/
+env/
+ENV/
+.venv/
+rasa_venv/
+
+# IDE
+.vscode/
+
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Database files
+*.db
+*.db.wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Build outputs
+build/
+dist/
+*.tar.gz
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Rasa specific
+models/
+*.tar.gz
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+
