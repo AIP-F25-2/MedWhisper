@@ -5,8 +5,15 @@ on:
     branches:
       - dev
       - main
+      - ML-models        # optional: analyze branch pushes too
   pull_request:
+    branches:
+      - dev              # analyze PRs targeting dev
     types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write   # needed so Sonar can decorate PRs with results
 
 jobs:
   sonarcloud:
@@ -20,15 +27,16 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.10"
 
       - name: Install dependencies (optional)
         run: |
-          pip install -r requirements.txt || true
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # auto-provided by Actions
