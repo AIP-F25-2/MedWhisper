@@ -1,0 +1,42 @@
+name: SonarCloud Scan
+
+on:
+  push:
+    branches:
+      - dev
+      - main
+      - ML-models        # optional: analyze branch pushes too
+  pull_request:
+    branches:
+      - dev              # analyze PRs targeting dev
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write   # needed so Sonar can decorate PRs with results
+
+jobs:
+  sonarcloud:
+    name: SonarCloud Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies (optional)
+        run: |
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@1c8f0b52f1f0c2c7265b04e65e1e284a87e3bceb
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # auto-provided by Actions
