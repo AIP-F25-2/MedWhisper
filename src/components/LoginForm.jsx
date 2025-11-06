@@ -7,6 +7,8 @@ const LoginForm = ({ isOpen, onClose, onSwitchToSignup }) => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -14,13 +16,83 @@ const LoginForm = ({ isOpen, onClose, onSwitchToSignup }) => {
       ...prev,
       [name]: value
     }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+    
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle login logic here
-    console.log('Login submitted:', formData);
-    // Add your authentication logic here
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('http://localhost:8001/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        // Store user data in localStorage for session management
+        localStorage.setItem('user', JSON.stringify(data.user));
+        alert(`Welcome back, ${data.user.full_name}!`);
+        onClose();
+        // Reset form
+        setFormData({
+          email: '',
+          password: '',
+        });
+        setRememberMe(false);
+      } else {
+        // Handle different error cases
+        if (response.status === 401) {
+          alert('Invalid email or password. Please check your credentials and try again.');
+        } else if (response.status === 500) {
+          alert('Server error. Please try again later.');
+        } else {
+          alert(data.error || 'Login failed. Please check your credentials.');
+        }
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      alert('Network error. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -69,10 +141,13 @@ const LoginForm = ({ isOpen, onClose, onSwitchToSignup }) => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014A93] focus:border-transparent outline-none transition-all"
+                className={`block w-full pl-10 pr-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#014A93] focus:border-transparent outline-none transition-all ${
+                  errors.email ? 'border-red-500' : 'border-gray-300'
+                }`}
                 placeholder="you@example.com"
               />
             </div>
+            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
 
           {/* Password Input */}
@@ -93,7 +168,9 @@ const LoginForm = ({ isOpen, onClose, onSwitchToSignup }) => {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014A93] focus:border-transparent outline-none transition-all"
+                className={`block w-full pl-10 pr-10 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#014A93] focus:border-transparent outline-none transition-all ${
+                  errors.password ? 'border-red-500' : 'border-gray-300'
+                }`}
                 placeholder="••••••••"
               />
               <button
@@ -113,6 +190,7 @@ const LoginForm = ({ isOpen, onClose, onSwitchToSignup }) => {
                 )}
               </button>
             </div>
+            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
           </div>
 
           {/* Remember Me & Forgot Password */}
@@ -134,9 +212,10 @@ const LoginForm = ({ isOpen, onClose, onSwitchToSignup }) => {
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-[#014A93] to-[#2B6FDF] text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+            disabled={isSubmitting}
+            className="w-full bg-gradient-to-r from-[#014A93] to-[#2B6FDF] text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
-            Sign In
+            {isSubmitting ? 'Signing In...' : 'Sign In'}
           </button>
 
           {/* Divider */}

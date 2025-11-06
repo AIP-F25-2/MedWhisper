@@ -22,7 +22,7 @@ const Home = () => {
                 Get Started
               </a>
               <a href="#login" className="px-6 py-3 rounded-lg border border-white/70 text-white hover:bg-white/10">
-                Login In
+                Login
               </a>
             </div>
           </div>

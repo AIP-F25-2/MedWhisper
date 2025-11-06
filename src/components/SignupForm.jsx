@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import SignupInfo from './SignupInfo';
 
 const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
@@ -10,6 +11,10 @@ const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [agreeToTerms, setAgreeToTerms] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSignupInfo, setShowSignupInfo] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,30 +22,230 @@ const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
       ...prev,
       [name]: value
     }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ''
+      }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.fullName.trim()) {
+      newErrors.fullName = 'Full name is required';
+    }
+    
+    if (!formData.email.trim()) {
+      newErrors.email = 'Email is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Please enter a valid email address';
+    }
+    
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+    
+    if (!formData.confirmPassword) {
+      newErrors.confirmPassword = 'Please confirm your password';
+    } else if (formData.password !== formData.confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match';
+    }
+    
+    if (!agreeToTerms) {
+      newErrors.terms = 'Please agree to the terms and conditions';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate passwords match
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
+    if (!validateForm()) {
       return;
     }
-
-    if (!agreeToTerms) {
-      alert("Please agree to the terms and conditions");
-      return;
+    
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('http://localhost:8001/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          full_name: formData.fullName
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        setUserData(data);
+        setShowSignupInfo(true);
+      } else {
+        // Handle different error cases
+        if (response.status === 409) {
+          alert('This email is already registered. Please use a different email or try logging in instead.');
+        } else {
+          alert(data.error || 'Signup failed. Please try again.');
+        }
+      }
+    } catch (error) {
+      console.error('Signup error:', error);
+      alert('Network error. Please check your connection and try again.');
+    } finally {
+      setIsSubmitting(false);
     }
+  };
 
-    // Handle signup logic here
-    console.log('Signup submitted:', formData);
-    // Add your registration logic here
+  const handleProfileSubmit = async (profileData) => {
+    try {
+      const response = await fetch('http://localhost:8001/auth/profile', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profileData),
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        alert('Account created successfully! You can now log in.');
+        setShowSignupInfo(false);
+        onClose();
+        // Reset form
+        setFormData({
+          fullName: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+        });
+        setAgreeToTerms(false);
+      } else {
+        alert(data.error || 'Failed to save profile information.');
+      }
+    } catch (error) {
+      console.error('Profile submission error:', error);
+      alert('Failed to save profile information. Please try again.');
+    }
+  };
+
+  const handleSignupInfoClose = () => {
+    setShowSignupInfo(false);
+    onClose();
+  };
+
+  // Social Login Functions
+  // eslint-disable-next-line no-unused-vars
+  const handleGoogleSignup = async () => {
+    try {
+      // Simulate Google OAuth - in real app, you'd use Google OAuth library
+      const googleUserData = {
+        fullName: 'Google User',
+        email: `google.user.${Date.now()}@example.com`, // Unique email
+        password: 'google_oauth_password', // Placeholder
+        source: 'google'
+      };
+      
+      // Create account directly for social login
+      const response = await fetch('http://localhost:8001/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: googleUserData.email,
+          password: googleUserData.password,
+          full_name: googleUserData.fullName
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        setUserData(data);
+        setShowSignupInfo(true);
+        alert('Google account connected! Please complete your profile.');
+      } else {
+        if (response.status === 409) {
+          alert('This Google account is already registered. Please try logging in instead.');
+        } else {
+          alert(data.error || 'Failed to connect Google account.');
+        }
+      }
+    } catch (error) {
+      console.error('Google signup error:', error);
+      alert('Failed to connect with Google. Please try again.');
+    }
+  };
+
+  // eslint-disable-next-line no-unused-vars
+  const handleFacebookSignup = async () => {
+    try {
+      // Simulate Facebook OAuth - in real app, you'd use Facebook SDK
+      const facebookUserData = {
+        fullName: 'Facebook User',
+        email: `facebook.user.${Date.now()}@example.com`, // Unique email
+        password: 'facebook_oauth_password', // Placeholder
+        source: 'facebook'
+      };
+      
+      // Create account directly for social login
+      const response = await fetch('http://localhost:8001/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: facebookUserData.email,
+          password: facebookUserData.password,
+          full_name: facebookUserData.fullName
+        }),
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok && data.success) {
+        setUserData(data);
+        setShowSignupInfo(true);
+        alert('Facebook account connected! Please complete your profile.');
+      } else {
+        if (response.status === 409) {
+          alert('This Facebook account is already registered. Please try logging in instead.');
+        } else {
+          alert(data.error || 'Failed to connect Facebook account.');
+        }
+      }
+    } catch (error) {
+      console.error('Facebook signup error:', error);
+      alert('Failed to connect with Facebook. Please try again.');
+    }
   };
 
   if (!isOpen) return null;
 
   return (
+    <>
+      {/* SignupInfo Component */}
+      <SignupInfo
+        isOpen={showSignupInfo}
+        onClose={handleSignupInfoClose}
+        userData={userData}
+        onSubmit={handleProfileSubmit}
+      />
+      
+      {/* Main Signup Form */}
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm overflow-y-auto py-4">
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden my-4">
         {/* Close button */}
@@ -84,10 +289,14 @@ const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
                 value={formData.fullName}
                 onChange={handleChange}
                 required
-                className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014A93] focus:border-transparent outline-none transition-all"
+                className={`block w-full pl-10 pr-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#014A93] focus:border-transparent outline-none transition-all ${
+                  errors.fullName ? 'border-red-500' : 'border-gray-300'
+                }`}
                 placeholder="John Doe"
               />
             </div>
+            {errors.fullName && <p className="text-red-500 text-sm mt-1">{errors.fullName}</p>}
+            
           </div>
 
           {/* Email Input */}
@@ -108,10 +317,13 @@ const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014A93] focus:border-transparent outline-none transition-all"
+                className={`block w-full pl-10 pr-3 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#014A93] focus:border-transparent outline-none transition-all ${
+                  errors.email ? 'border-red-500' : 'border-gray-300'
+                }`}
                 placeholder="you@example.com"
               />
             </div>
+            {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
           </div>
 
           {/* Password Input */}
@@ -132,8 +344,10 @@ const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                minLength={8}
-                className="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014A93] focus:border-transparent outline-none transition-all"
+                minLength={6}
+                className={`block w-full pl-10 pr-10 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#014A93] focus:border-transparent outline-none transition-all ${
+                  errors.password ? 'border-red-500' : 'border-gray-300'
+                }`}
                 placeholder="••••••••"
               />
               <button
@@ -153,7 +367,8 @@ const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
                 )}
               </button>
             </div>
-            <p className="mt-1 text-xs text-gray-500">Must be at least 8 characters</p>
+            {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
+            <p className="mt-1 text-xs text-gray-500">Must be at least 6 characters</p>
           </div>
 
           {/* Confirm Password Input */}
@@ -174,7 +389,9 @@ const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
-                className="block w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#014A93] focus:border-transparent outline-none transition-all"
+                className={`block w-full pl-10 pr-10 py-2.5 border rounded-lg focus:ring-2 focus:ring-[#014A93] focus:border-transparent outline-none transition-all ${
+                  errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
+                }`}
                 placeholder="••••••••"
               />
               <button
@@ -194,6 +411,7 @@ const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
                 )}
               </button>
             </div>
+            {errors.confirmPassword && <p className="text-red-500 text-sm mt-1">{errors.confirmPassword}</p>}
           </div>
 
           {/* Terms and Conditions */}
@@ -216,14 +434,16 @@ const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
                 </a>
               </span>
             </label>
+            {errors.terms && <p className="text-red-500 text-sm mt-1">{errors.terms}</p>}
           </div>
 
           {/* Submit Button */}
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-[#014A93] to-[#2B6FDF] text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all transform hover:scale-[1.02] active:scale-[0.98]"
+            disabled={isSubmitting}
+            className="w-full bg-gradient-to-r from-[#014A93] to-[#2B6FDF] text-white py-3 rounded-lg font-semibold hover:shadow-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
           >
-            Create Account
+            {isSubmitting ? 'Creating Account...' : 'Create Account'}
           </button>
 
           {/* Divider */}
@@ -240,6 +460,7 @@ const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
           <div className="grid grid-cols-2 gap-3">
             <button
               type="button"
+              onClick={handleGoogleSignup}
               className="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -252,6 +473,7 @@ const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
             </button>
             <button
               type="button"
+              onClick={handleFacebookSignup}
               className="flex items-center justify-center gap-2 px-4 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
             >
               <svg className="w-5 h-5" fill="#1877F2" viewBox="0 0 24 24">
@@ -275,6 +497,7 @@ const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
         </form>
       </div>
     </div>
+    </>
   );
 };
 

@@ -23,7 +23,8 @@ const Chatbot = () => {
   const inputRef = useRef(null);
   const chatContainerRef = useRef(null);
 
-  const API_BASE = 'http://localhost:8001';
+  const API_BASE = 'https://8603d105136a.ngrok-free.app';
+  const FALLBACK_API_BASE = 'http://localhost:8001'; // Fallback to local backend if direct connection fails
   const userId = 'web-user-' + Math.random().toString(36).substr(2, 9);
 
   // Quick reply suggestions
@@ -125,19 +126,81 @@ const Chatbot = () => {
     setIsTyping(true);
 
     try {
-      const response = await fetch(`${API_BASE}/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          sender: userId,
-          message: messageText,
-        }),
-      });
+      let response;
+      let apiUrl;
+      let useDirectConnection = false;
+      
+      // Try direct connection first
+      try {
+        apiUrl = `${API_BASE}/query`;
+        response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true',
+            'Accept': 'application/json',
+          },
+          body: JSON.stringify({
+            query: messageText,
+            user_id: userId,
+            user_role: 'student',
+          }),
+        });
+        
+        // Check if direct connection response is OK
+        if (response.ok) {
+          useDirectConnection = true;
+        } else {
+          // Direct connection returned error, try fallback
+          throw new Error(`Direct API returned ${response.status}`);
+        }
+      } catch (directError) {
+        // CORS, network error, or non-OK response - fallback to local backend proxy
+        console.log('Direct connection failed, trying local backend proxy:', directError);
+        try {
+          apiUrl = `${FALLBACK_API_BASE}/chat`;
+          response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              sender: userId,
+              message: messageText,
+            }),
+          });
+          
+          // Check if fallback response is OK
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error(`Fallback API Error ${response.status}:`, errorText);
+            throw new Error(`Fallback API returned ${response.status}: ${response.statusText}`);
+          }
+        } catch (fallbackError) {
+          // Both direct and fallback failed
+          console.error('Both direct and fallback connections failed:', fallbackError);
+          throw new Error('Unable to connect to any backend server. Please ensure the FastAPI backend is running on port 8001.');
+        }
+      }
 
+      // Parse JSON response
       const data = await response.json();
-      const botReply = data.replies && data.replies[0] ? data.replies[0] : "Sorry, I couldn't process that.";
+      console.log('API Response:', data);
+      
+      // Extract response text (handle both direct and proxy formats)
+      let botReply;
+      if (useDirectConnection) {
+        // Direct API response format
+        botReply = data.response || data.reply || data.message;
+      } else {
+        // Proxy API response format
+        botReply = data.replies && data.replies[0] ? data.replies[0] : data.response;
+      }
+      
+      if (!botReply || botReply === "Sorry, I couldn't process that question.") {
+        console.warn('Unexpected API response format:', data);
+        botReply = "Sorry, I couldn't process that question.";
+      }
 
       const botMessage = {
         id: Date.now() + 1,
@@ -149,9 +212,23 @@ const Chatbot = () => {
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
+      
+      // Provide more specific error messages
+      let errorText = 'Sorry, I am currently unable to respond. Please check your connection and try again.';
+      
+      if (error.message.includes('Unable to connect to any backend server')) {
+        errorText = 'Backend server is not running. Please start the FastAPI backend on port 8001. See CHATBOT_TROUBLESHOOTING.md for instructions.';
+      } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+        errorText = 'Network error: Unable to connect to the server. Please check your internet connection and ensure the backend is running.';
+      } else if (error.message.includes('CORS')) {
+        errorText = 'Connection blocked. Please check your browser settings or try again.';
+      } else if (error.message.includes('API returned') || error.message.includes('returned')) {
+        errorText = `Server error: ${error.message}. Please ensure the backend server is running and try again.`;
+      }
+      
       const errorMessage = {
         id: Date.now() + 1,
-        text: 'Sorry, I am currently unable to respond. Please make sure the backend server is running.',
+        text: errorText,
         sender: 'bot',
         timestamp: new Date(),
       };
