@@ -189,8 +189,13 @@ class MedWhisperRAG:
             
             # PRAGMATIC FIX: Allow medical interpretation if proper citations exist
             # Count how many DocIDs are cited
+            # import re
+            # cited_ids = re.findall(r'\[DocID:\s*([^\]]+)\]', response_text)
             import re
-            cited_ids = re.findall(r'\[DocID:\s*([^\]]+)\]', response_text)
+
+            # Extract cited DocIDs safely (avoid ReDoS)
+            cited_ids = re.findall(r'\[DocID:\s*([A-Za-z0-9_\-]+)\]', response_text)
+
             
             if len(cited_ids) >= 3 and len(retrieved_docs) > 0:
                 # If response has 3+ citations and we retrieved docs, mark as valid
