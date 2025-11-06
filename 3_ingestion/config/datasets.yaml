@@ -1,0 +1,36 @@
+﻿raw_roots:
+  - "D:/MedWhisper-Data Engineer/1_data/1_raw/1_mimic-iv-2.1/1_hosp"
+  - "D:/MedWhisper-Data Engineer/1_data/1_raw/1_mimic-iv-2.1/2_icu"
+
+# search recursively and include gzipped CSVs
+include_patterns: ["**/*.csv", "**/*.csv.gz", "**/*.parquet", "**/*.feather", "**/*.xlsx", "**/*.xls"]
+
+# Optional: per-table hints (improves text quality). You can add more later.
+table_hints:
+  diagnoses_icd:
+    id_cols: ["subject_id","hadm_id","seq_num"]
+    prefer_text_cols: ["icd_code","long_title","icd_version"]
+
+  d_icd_diagnoses:
+    id_cols: ["icd_code","icd_version"]
+    prefer_text_cols: ["long_title"]
+
+  d_labitems:
+    id_cols: ["itemid"]
+    prefer_text_cols: ["label","fluid","category","loinc_code"]
+
+  microbiologyevents:
+    id_cols: ["subject_id","hadm_id","microevent_id"]
+    prefer_text_cols: ["org_name","spec_type_desc","interpretation"]
+
+  omr:
+    id_cols: ["subject_id","chartdate","seq_num"]
+    prefer_text_cols: ["result_name","result_value"]
+
+  procedures_icd:
+    id_cols: ["subject_id","hadm_id","seq_num"]
+    prefer_text_cols: ["icd_code","long_title","icd_version"]
+
+  chartevents:
+    id_cols: ["subject_id","hadm_id","stay_id","charttime","itemid"]
+    prefer_text_cols: ["valuetext","valueuom","value"]
