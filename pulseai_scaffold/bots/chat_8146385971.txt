@@ -61,3 +61,24 @@ Bot: A tetanus antitoxin injection was administered on May 20, 2019, following w
 User: What causes chest pain?
 Bot: Chest pain can arise from a wide range of conditions, including cardiac issues like heart attack or angina, and pulmonary problems such as pneumonia or pleurisy. Gastrointestinal causes like GERD, musculoskeletal strain, and anxiety or panic attacks are also common contributors to chest discomfort. Any new or severe chest pain warrants prompt medical evaluation to determine the underlying cause.
 ---
+User: What are the symptoms of flu?
+Bot: **Common flu symptoms include:**
+
+🌡️ **Fever**: Usually high (101°F-104°F or 38°C-40°C)
+😷 **Respiratory symptoms**: Dry cough, sore throat, runny or stuffy nose
+💪 **Body symptoms**: Muscle aches and pains, fatigue, weakness
+🤕 **Other symptoms**: Headache, chills
+
+**Additional symptoms (especially in children):**
+• Nausea, vomiting, and diarrhea
+
+**Key differences from a cold:**
+• Flu symptoms come on suddenly and are more severe
+• Fever is more common and higher with flu
+• Recovery typically takes 1-2 weeks
+
+⚠️ **Important**: This information is for educational purposes only. Please consult a healthcare professional for proper medical advice, especially if symptoms are severe, persistent, or if you're in a high-risk group.
+---
+User (photo): What can you tell me about this image?
+Bot: Sorry, there was an error processing your image. Please try again.
+---

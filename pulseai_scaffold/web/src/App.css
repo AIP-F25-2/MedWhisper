@@ -267,6 +267,27 @@ body {
   background: #eaf0fa;
 }
 
+.icon-btn.recording {
+  background: #ff4757;
+  color: white;
+  animation: recording-pulse 1s infinite;
+}
+
+@keyframes recording-pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.message-image {
+  margin-bottom: 8px;
+}
+
+.message-image img {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
 .send-btn {
   padding: 12px 28px;
   background-color: #0052cc;

@@ -3,12 +3,15 @@ import "./app.css";
 
 export default function App() {
   const [messages, setMessages] = useState([
-    { from: "bot", text: "Hi! I’m Med-Whisper. Ask a clinical question. (Info only—no diagnosis.)" }
+    { from: "bot", text: "Hi! I'm Med-Whisper. Ask a clinical question, send an image, or use voice input. (Info only—no diagnosis.)" }
   ]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [typing, setTyping] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
   const boxRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (boxRef.current) {
@@ -91,6 +94,115 @@ export default function App() {
     }
   }
 
+  async function sendImage(file, message = "Please analyze this medical image") {
+    if (!file || busy) return;
+    setBusy(true);
+    setMessages((m) => [...m, { from: "user", text: `📷 Image: ${message}`, image: URL.createObjectURL(file) }]);
+    setTyping("");
+
+    try {
+      // Convert image to base64
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64Data = reader.result;
+        
+        const res = await fetch("/api/chat/image", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            sender: "web-user", 
+            message: message,
+            image_data: base64Data
+          })
+        });
+        
+        const data = await res.json();
+        let reply = data.text || "Sorry, I couldn't analyze the image.";
+        setMessages((m) => [...m, { from: "bot", text: reply }]);
+        setBusy(false);
+        setTyping("");
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      setMessages((m) => [...m, { from: "bot", text: "Sorry, I couldn't process the image." }]);
+      setBusy(false);
+      setTyping("");
+    }
+  }
+
+  async function startVoiceRecording() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      
+      const audioChunks = [];
+      mediaRecorder.ondataavailable = (event) => {
+        audioChunks.push(event.data);
+      };
+      
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+        await sendVoice(audioBlob);
+        stream.getTracks().forEach(track => track.stop());
+      };
+      
+      mediaRecorder.start();
+      setIsRecording(true);
+    } catch (err) {
+      console.error("Error starting recording:", err);
+      alert("Could not access microphone. Please check permissions.");
+    }
+  }
+
+  function stopVoiceRecording() {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+    }
+  }
+
+  async function sendVoice(audioBlob) {
+    setBusy(true);
+    setMessages((m) => [...m, { from: "user", text: "🎤 Voice message..." }]);
+    setTyping("");
+
+    try {
+      const formData = new FormData();
+      formData.append('audio_file', audioBlob, 'voice.wav');
+      formData.append('sender', 'web-user');
+
+      const res = await fetch("/api/chat/voice", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+      let reply = data.text || "Sorry, I couldn't process your voice message.";
+      setMessages((m) => [...m, { from: "bot", text: reply }]);
+    } catch (err) {
+      setMessages((m) => [...m, { from: "bot", text: "Sorry, I couldn't process your voice message." }]);
+    } finally {
+      setBusy(false);
+      setTyping("");
+    }
+  }
+
+  function handleImageUpload() {
+    fileInputRef.current.click();
+  }
+
+  function handleFileSelect(e) {
+    const file = e.target.files[0];
+    if (file && file.type.startsWith('image/')) {
+      const message = "Please analyze this medical image";
+      sendImage(file, message);
+    } else if (file) {
+      alert("Please select an image file.");
+    }
+    e.target.value = '';
+  }
+
   return (
     <div className="app-bg">
       <div className="chat-header">
@@ -107,7 +219,14 @@ export default function App() {
                   <span role="img" aria-label="User">🧑</span>
                 )}
               </div>
-              <div className="bubble">{m.text}</div>
+              <div className="bubble">
+                {m.image && (
+                  <div className="message-image">
+                    <img src={m.image} alt="Uploaded" style={{maxWidth: '200px', borderRadius: '8px'}} />
+                  </div>
+                )}
+                {m.text}
+              </div>
             </div>
           ))}
           {typing && (
@@ -123,7 +242,20 @@ export default function App() {
           This chatbot is for informational and educational purposes only. It does not provide medical advice, diagnosis, or treatment. Always consult a qualified healthcare professional for medical concerns.
         </div>
         <form onSubmit={send} className="chat-input">
-          <button type="button" className="icon-btn" tabIndex={-1} title="Voice input (coming soon)" disabled>
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            accept="image/*"
+            onChange={handleFileSelect}
+          />
+          <button 
+            type="button" 
+            className={`icon-btn ${isRecording ? 'recording' : ''}`}
+            onClick={isRecording ? stopVoiceRecording : startVoiceRecording}
+            disabled={busy}
+            title={isRecording ? "Stop recording" : "Start voice recording"}
+          >
             <span role="img" aria-label="Microphone">🎤</span>
           </button>
           <input
@@ -132,8 +264,14 @@ export default function App() {
             placeholder={busy ? "Thinking..." : "Type your question"}
             disabled={busy}
           />
-          <button type="button" className="icon-btn" tabIndex={-1} title="Emoji picker (coming soon)" disabled>
-            <span role="img" aria-label="Emoji">😊</span>
+          <button 
+            type="button" 
+            className="icon-btn" 
+            onClick={handleImageUpload}
+            disabled={busy}
+            title="Upload image"
+          >
+            <span role="img" aria-label="Camera">📷</span>
           </button>
           <button type="submit" className="send-btn" disabled={busy}>
             {busy ? "..." : "Send"}

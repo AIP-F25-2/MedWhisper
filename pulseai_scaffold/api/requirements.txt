@@ -2,3 +2,7 @@ fastapi
 uvicorn
 httpx
 python-dotenv
+openai
+speechrecognition
+pillow
+python-multipart
