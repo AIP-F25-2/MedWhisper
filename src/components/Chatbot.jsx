@@ -12,6 +12,9 @@ const Chatbot = () => {
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [isUploadingAudio, setIsUploadingAudio] = useState(false);
+  const [audioPermissionDenied, setAudioPermissionDenied] = useState(false);
   const [lastSeenMessageId, setLastSeenMessageId] = useState(1); // Track the last seen message
   const [position, setPosition] = useState({ 
     x: window.innerWidth - 400, // Position to show full chat window (380px width + margin)
@@ -22,11 +25,15 @@ const Chatbot = () => {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const chatContainerRef = useRef(null);
+  const mediaRecorderRef = useRef(null);
+  const audioChunksRef = useRef([]);
 
-  const API_BASE = 'https://8603d105136a.ngrok-free.app';
-  const FALLBACK_API_BASE = 'http://localhost:8001'; // Fallback to local backend if direct connection fails
-  const userId = 'web-user-' + Math.random().toString(36).substr(2, 9);
-
+  const API_BASE = 'https://e66adf64e3a5.ngrok-free.app';
+  const FALLBACK_API_BASE = 'http://localhost:8010'; // Fallback to local backend if direct connection fails
+  const TEXT_ENDPOINT = '/qa';
+  const VOICE_ENDPOINT = '/voice-qa';
+  const DEFAULT_LANGUAGE = 'en';
+  const DEFAULT_USER_ROLE = 'student';
   // Quick reply suggestions
   const quickReplies = [
     "What are the symptoms of flu?",
@@ -111,6 +118,60 @@ const Chatbot = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const extractBotReply = (data) => {
+    if (!data || typeof data !== 'object') return null;
+
+    return (
+      data?.rag?.response ||
+      data?.rag?.answer ||
+      data?.response ||
+      data?.message ||
+      data?.text?.response ||
+      data?.text?.answer ||
+      data?.text ||
+      data?.transcript ||
+      null
+    );
+  };
+
+  const fetchTextResponse = async (baseUrl, question) => {
+    const response = await fetch(`${baseUrl}${TEXT_ENDPOINT}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        question,
+        language: DEFAULT_LANGUAGE,
+        patient_id: null,
+        include_timeline: false,
+        include_differential: false,
+        user_role: DEFAULT_USER_ROLE,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Text API ${baseUrl}${TEXT_ENDPOINT} returned ${response.status}: ${errorText}`);
+    }
+
+    return response.json();
+  };
+
+  const uploadVoiceResponse = async (baseUrl, formData) => {
+    const response = await fetch(`${baseUrl}${VOICE_ENDPOINT}`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Voice API ${baseUrl}${VOICE_ENDPOINT} returned ${response.status}: ${errorText}`);
+    }
+
+    return response.json();
+  };
+
   const sendMessage = async (messageText) => {
     if (!messageText.trim()) return;
 
@@ -126,106 +187,45 @@ const Chatbot = () => {
     setIsTyping(true);
 
     try {
-      let response;
-      let apiUrl;
-      let useDirectConnection = false;
-      
-      // Try direct connection first
+      let data;
+      let usedFallback = false;
       try {
-        apiUrl = `${API_BASE}/query`;
-        response = await fetch(apiUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': 'true',
-            'Accept': 'application/json',
-          },
-          body: JSON.stringify({
-            query: messageText,
-            user_id: userId,
-            user_role: 'student',
-          }),
-        });
-        
-        // Check if direct connection response is OK
-        if (response.ok) {
-          useDirectConnection = true;
-        } else {
-          // Direct connection returned error, try fallback
-          throw new Error(`Direct API returned ${response.status}`);
-        }
-      } catch (directError) {
-        // CORS, network error, or non-OK response - fallback to local backend proxy
-        console.log('Direct connection failed, trying local backend proxy:', directError);
-        try {
-          apiUrl = `${FALLBACK_API_BASE}/chat`;
-          response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              sender: userId,
-              message: messageText,
-            }),
-          });
-          
-          // Check if fallback response is OK
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`Fallback API Error ${response.status}:`, errorText);
-            throw new Error(`Fallback API returned ${response.status}: ${response.statusText}`);
-          }
-        } catch (fallbackError) {
-          // Both direct and fallback failed
-          console.error('Both direct and fallback connections failed:', fallbackError);
-          throw new Error('Unable to connect to any backend server. Please ensure the FastAPI backend is running on port 8001.');
-        }
+        data = await fetchTextResponse(API_BASE, messageText);
+      } catch (primaryError) {
+        console.warn('Primary text API failed, switching to fallback:', primaryError);
+        usedFallback = true;
+        data = await fetchTextResponse(FALLBACK_API_BASE, messageText);
       }
 
-      // Parse JSON response
-      const data = await response.json();
-      console.log('API Response:', data);
-      
-      // Extract response text (handle both direct and proxy formats)
-      let botReply;
-      if (useDirectConnection) {
-        // Direct API response format
-        botReply = data.response || data.reply || data.message;
-      } else {
-        // Proxy API response format
-        botReply = data.replies && data.replies[0] ? data.replies[0] : data.response;
-      }
-      
-      if (!botReply || botReply === "Sorry, I couldn't process that question.") {
-        console.warn('Unexpected API response format:', data);
-        botReply = "Sorry, I couldn't process that question.";
-      }
+      const botReply = extractBotReply(data);
 
       const botMessage = {
         id: Date.now() + 1,
-        text: botReply,
+        text: botReply || "Sorry, I couldn't process that question.",
         sender: 'bot',
         timestamp: new Date(),
       };
 
+      if (usedFallback) {
+        botMessage.meta = 'fallback';
+      }
+
       setMessages((prev) => [...prev, botMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
-      
-      // Provide more specific error messages
+
       let errorText = 'Sorry, I am currently unable to respond. Please check your connection and try again.';
-      
+
       if (error.message.includes('Unable to connect to any backend server')) {
-        errorText = 'Backend server is not running. Please start the FastAPI backend on port 8001. See CHATBOT_TROUBLESHOOTING.md for instructions.';
+        errorText = 'Backend server is not running. Please start the FastAPI backend on port 8010 or review README_Guide.md.';
       } else if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
         errorText = 'Network error: Unable to connect to the server. Please check your internet connection and ensure the backend is running.';
       } else if (error.message.includes('CORS')) {
         errorText = 'Connection blocked. Please check your browser settings or try again.';
-      } else if (error.message.includes('API returned') || error.message.includes('returned')) {
+      } else if (error.message.includes('API ')) {
         errorText = `Server error: ${error.message}. Please ensure the backend server is running and try again.`;
       }
-      
+
       const errorMessage = {
         id: Date.now() + 1,
         text: errorText,
@@ -235,6 +235,80 @@ const Chatbot = () => {
       setMessages((prev) => [...prev, errorMessage]);
     } finally {
       setIsTyping(false);
+    }
+  };
+
+  const sendVoiceMessage = async (audioBlob) => {
+    if (!audioBlob) return;
+
+    const userVoiceMessage = {
+      id: Date.now(),
+      text: '🎤 Voice message sent.',
+      sender: 'user',
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userVoiceMessage]);
+    setIsTyping(true);
+    setIsUploadingAudio(true);
+
+    const formData = new FormData();
+    const voiceFile = new File([audioBlob], `voice-query-${Date.now()}.webm`, { type: audioBlob.type || 'audio/webm' });
+    formData.append('file', voiceFile);
+    formData.append('language', DEFAULT_LANGUAGE);
+    formData.append('user_role', DEFAULT_USER_ROLE);
+    formData.append('include_timeline', 'false');
+    formData.append('include_differential', 'false');
+
+    try {
+      let response;
+      let usedFallback = false;
+
+      try {
+        response = await uploadVoiceResponse(API_BASE, formData);
+      } catch (primaryError) {
+        console.warn('Primary voice API failed, switching to fallback:', primaryError);
+        usedFallback = true;
+        response = await uploadVoiceResponse(FALLBACK_API_BASE, formData);
+      }
+
+      const botReply = extractBotReply(response);
+
+      const botMessage = {
+        id: Date.now() + 1,
+        text: botReply || "Sorry, I couldn't process that voice question.",
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+
+      if (usedFallback) {
+        botMessage.meta = 'fallback';
+      }
+
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Error sending voice message:', error);
+
+      let errorText = 'Voice processing failed. Please try again or use text input.';
+
+      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+        errorText = 'Network error: Unable to upload audio. Please check your internet connection and ensure the backend is running.';
+      } else if (error.message.includes('CORS')) {
+        errorText = 'Voice connection blocked. Please check browser settings or try again.';
+      } else if (error.message.includes('Voice API')) {
+        errorText = `Voice server error: ${error.message}. See README_Guide.md for setup instructions.`;
+      }
+
+      const errorMessage = {
+        id: Date.now() + 1,
+        text: errorText,
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsTyping(false);
+      setIsUploadingAudio(false);
     }
   };
 
@@ -262,6 +336,76 @@ const Chatbot = () => {
   const formatTime = (date) => {
     return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
   };
+
+  const handleToggleRecording = async () => {
+    if (isRecording && mediaRecorderRef.current) {
+      setIsRecording(false);
+      mediaRecorderRef.current.stop();
+      return;
+    }
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      const errorMessage = {
+        id: Date.now(),
+        text: 'Voice input is not supported in this browser. Please use a modern browser that supports microphone access.',
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      audioChunksRef.current = [];
+
+      recorder.ondataavailable = (event) => {
+        if (event.data && event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      recorder.onstop = () => {
+        setIsRecording(false);
+        stream.getTracks().forEach(track => track.stop());
+        mediaRecorderRef.current = null;
+
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        audioChunksRef.current = [];
+
+        if (audioBlob.size > 0) {
+          sendVoiceMessage(audioBlob);
+        } else {
+          console.warn('Recorded audio blob is empty.');
+        }
+      };
+
+      recorder.start();
+      mediaRecorderRef.current = recorder;
+      setIsRecording(true);
+      setAudioPermissionDenied(false);
+    } catch (error) {
+      console.error('Unable to access microphone:', error);
+      setAudioPermissionDenied(true);
+      const errorMessage = {
+        id: Date.now(),
+        text: 'Microphone access denied. Please enable permissions in your browser settings to use voice input.',
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stream?.getTracks?.().forEach((track) => track.stop());
+        mediaRecorderRef.current = null;
+      }
+    };
+  }, []);
 
   return (
     <div 
@@ -361,7 +505,7 @@ const Chatbot = () => {
         </div>
 
         {/* Quick Replies */}
-        {messages.length === 1 && !isTyping && (
+        {messages.length === 1 && !isTyping && !isUploadingAudio && (
           <div className="px-4 py-2 bg-gray-50 border-t border-gray-200">
             <p className="text-xs text-gray-500 mb-2">Quick questions:</p>
             <div className="flex flex-wrap gap-2">
@@ -380,7 +524,7 @@ const Chatbot = () => {
 
         {/* Input Area */}
         <div className="p-4 bg-white border-t border-gray-200 rounded-b-2xl">
-          <form onSubmit={handleSubmit} className="flex gap-2">
+          <form onSubmit={handleSubmit} className="flex gap-2 items-center">
             <input
               ref={inputRef}
               type="text"
@@ -389,12 +533,49 @@ const Chatbot = () => {
               placeholder="Type your message..."
               className="flex-1 px-4 py-2.5 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-[#014A93] focus:border-transparent text-sm"
             />
-            
+
+            {/* Voice Button */}
+            <button
+              type="button"
+              onClick={handleToggleRecording}
+              disabled={isTyping || isUploadingAudio}
+              aria-pressed={isRecording}
+              className={`relative flex items-center justify-center p-2.5 rounded-full border transition-all ${
+                isRecording
+                  ? 'border-red-500 text-red-600 bg-red-50 animate-pulse'
+                  : 'border-gray-300 text-[#014A93] hover:bg-[#014A93] hover:text-white'
+              } disabled:opacity-50 disabled:cursor-not-allowed`}
+              title={
+                audioPermissionDenied
+                  ? 'Microphone permission denied. Please enable microphone access.'
+                  : isRecording
+                    ? 'Stop recording'
+                    : 'Start voice input'
+              }
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isRecording ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 1a3 3 0 00-3 3v6a3 3 0 006 0V4a3 3 0 00-3-3zM19 10a7 7 0 01-14 0m7 7v6m-4 0h8"
+                  />
+                )}
+              </svg>
+              {isUploadingAudio && (
+                <span className="absolute -bottom-2 text-[10px] uppercase tracking-wide text-[#014A93]">
+                  Sending...
+                </span>
+              )}
+            </button>
 
             {/* Send Button */}
             <button
               type="submit"
-              disabled={!inputMessage.trim() || isTyping}
+              disabled={!inputMessage.trim() || isTyping || isUploadingAudio}
               className="bg-gradient-to-r from-[#014A93] to-[#2B6FDF] text-white p-2.5 rounded-full hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
