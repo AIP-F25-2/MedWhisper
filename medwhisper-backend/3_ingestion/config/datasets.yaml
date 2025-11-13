@@ -1,0 +1,95 @@
+﻿# 3_ingestion/config/datasets.yaml
+# -------------------------------
+# Order: curated Parquet (fast) first → raw CSVs next
+raw_roots:
+  - "D:/medwhisper_db/medwhisper-backend/1_data/artifacts"
+  - "D:/MedWhisper-Data Engineer/1_data/1_raw/1_mimic-iv-2.1/1_hosp"
+  - "D:/MedWhisper-Data Engineer/1_data/1_raw/1_mimic-iv-2.1/2_icu"
+
+# temporarily exclude labevents_curated.parquet
+include_patterns: ["**/emar_detail_curated.parquet", "**/*.csv", "**/*.csv.gz", "**/*.xlsx", "**/*.xls"]
+
+# Optional: per-table hints → improve text quality
+table_hints:
+  # ---- curated parquet outputs ----
+  emar_detail_curated:
+    id_cols: ["subject_id", "hadm_id", "emar_id"]
+    prefer_text_cols: ["detail_text"]
+
+  labevents_curated:
+    id_cols: ["subject_id", "itemid"]
+    prefer_text_cols: ["value", "valueuom", "flag"]
+
+  # ---- core hospital tables ----
+  admissions:
+    id_cols: ["subject_id", "hadm_id"]
+    prefer_text_cols: ["admission_type", "admission_location", "discharge_location", "diagnosis"]
+
+  diagnoses_icd:
+    id_cols: ["subject_id", "hadm_id", "seq_num"]
+    prefer_text_cols: ["icd_code", "long_title", "icd_version"]
+
+  d_icd_diagnoses:
+    id_cols: ["icd_code", "icd_version"]
+    prefer_text_cols: ["long_title"]
+
+  d_icd_procedures:
+    id_cols: ["icd_code", "icd_version"]
+    prefer_text_cols: ["long_title"]
+
+  d_labitems:
+    id_cols: ["itemid"]
+    prefer_text_cols: ["label", "fluid", "category", "loinc_code"]
+
+  emar:
+    id_cols: ["subject_id", "hadm_id", "emar_id"]
+    prefer_text_cols: ["medication", "dose", "dose_unit", "route", "event_txt", "original_order_typ"]
+
+  emar_detail:
+    id_cols: ["emar_id"]
+    prefer_text_cols: ["field_name", "field_value", "event_txt", "route", "dose", "dose_unit", "original_order_typ"]
+
+  labevents:
+    id_cols: ["subject_id", "itemid"]
+    prefer_text_cols: ["value", "valueuom", "flag"]
+
+  microbiologyevents:
+    id_cols: ["subject_id", "hadm_id", "microevent_id"]
+    prefer_text_cols: ["org_name", "spec_type_desc", "interpretation"]
+
+  omr:
+    id_cols: ["subject_id", "chartdate", "seq_num"]
+    prefer_text_cols: ["result_name", "result_value"]
+
+  procedures_icd:
+    id_cols: ["subject_id", "hadm_id", "seq_num"]
+    prefer_text_cols: ["icd_code", "long_title", "icd_version"]
+
+  services:
+    id_cols: ["subject_id", "hadm_id"]
+    prefer_text_cols: ["prev_service", "curr_service"]
+
+  transfers:
+    id_cols: ["subject_id", "hadm_id", "transfer_id"]
+    prefer_text_cols: ["eventtype", "careunit", "intime", "outtime"]
+
+  # ---- ICU ----
+  chartevents:
+    id_cols: ["subject_id", "hadm_id", "stay_id", "charttime", "itemid"]
+    prefer_text_cols: ["valuetext", "valueuom", "value"]
+
+  icustays:
+    id_cols: ["subject_id", "hadm_id", "stay_id"]
+    prefer_text_cols: ["first_careunit", "last_careunit"]
+
+  inputevents:
+    id_cols: ["subject_id", "hadm_id", "stay_id", "itemid", "starttime", "endtime"]
+    prefer_text_cols: ["amount", "amountuom", "ordercategoryname", "patientweight"]
+
+  outputevents:
+    id_cols: ["subject_id", "hadm_id", "stay_id", "itemid", "charttime"]
+    prefer_text_cols: ["value", "valueuom"]
+
+  procedureevents:
+    id_cols: ["subject_id", "hadm_id", "stay_id", "itemid", "starttime", "endtime"]
+    prefer_text_cols: ["ordercategoryname", "ordercategorydescription"]

@@ -212,3 +212,8 @@ node_modules/
 .env.backup
 chat_*.txt
 package-lock.json
+# MedWhisper backend data & DuckDB (too large for git)
+medwhisper-backend/1_data/
+medwhisper-backend/2_database/
+*.duckdb
+*.parquet
