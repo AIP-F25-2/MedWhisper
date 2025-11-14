@@ -5,15 +5,15 @@ on:
     branches:
       - dev
       - main
-      - ML-models        # optional: analyze branch pushes too
+      - ML-models
   pull_request:
     branches:
-      - dev              # analyze PRs targeting dev
+      - dev
     types: [opened, synchronize, reopened]
 
 permissions:
   contents: read
-  pull-requests: write   # needed so Sonar can decorate PRs with results
+  pull-requests: write
 
 jobs:
   sonarcloud:
@@ -36,7 +36,7 @@ jobs:
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@1c8f0b52f1f0c2c7265b04e65e1e284a87e3bceb
+        uses: SonarSource/sonarcloud-github-action@v2   # <-- FIXED
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # auto-provided by Actions
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
