@@ -1,10 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
   const [user, setUser] = useState(null);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [messages, setMessages] = useState([
+    {
+      id: 1,
+      text: "Hi! I'm your PulseAI Copilot. How would you like to interact?",
+      sender: 'bot',
+      timestamp: new Date(),
+    },
+  ]);
+  const [isTyping, setIsTyping] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
+  const messagesEndRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -39,16 +50,88 @@ const Dashboard = () => {
     navigate('/');
   };
 
-  const handleQueryClick = (query) => {
-    setInputValue(query);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (inputValue.trim()) {
-      // Handle submission - can integrate with chatbot API
-      console.log('Submitting query:', inputValue);
-      // Reset input after submission
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const handleQueryClick = (query) => {
+    setInputValue(query);
+    // Auto-submit when clicking a query
+    setTimeout(() => {
+      handleSubmit(null, query);
+    }, 100);
+  };
+
+  const sendMessage = async (messageText) => {
+    if (!messageText.trim()) return;
+
+    // Hide welcome message and cards when first message is sent
+    if (showWelcome) {
+      setShowWelcome(false);
+    }
+
+    const userMessage = {
+      id: Date.now(),
+      text: messageText,
+      sender: 'user',
+      timestamp: new Date(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setIsTyping(true);
+
+    try {
+      const response = await fetch('http://localhost:8001/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sender: user?.email || 'user',
+          message: messageText,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}`);
+      }
+
+      const data = await response.json();
+      const botReply = data.text || "Sorry, I couldn't process that question.";
+
+      const botMessage = {
+        id: Date.now() + 1,
+        text: botReply,
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+
+      setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      const errorMessage = {
+        id: Date.now() + 1,
+        text: 'Sorry, I am currently unable to respond. Please check your connection and try again.',
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsTyping(false);
+    }
+  };
+
+  const handleSubmit = (e, queryText = null) => {
+    if (e) {
+      e.preventDefault();
+    }
+    const messageToSend = queryText || inputValue.trim();
+    if (messageToSend) {
+      sendMessage(messageToSend);
       setInputValue('');
     }
   };
@@ -237,58 +320,101 @@ const Dashboard = () => {
         </aside>
 
         {/* Main Content Panel */}
-        <main className="flex-1 flex flex-col bg-white">
-          {/* Welcome Message */}
-          <div className="p-8">
-            <div className="bg-blue-50 rounded-lg p-6 max-w-2xl">
-              <p className="text-lg text-gray-800">
-                Hi, I'm your PulseAI Copilot. How would you like to interact?
-              </p>
-            </div>
-          </div>
-
-          {/* Interaction Cards */}
-          <div className="px-8 pb-8 flex-1">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl">
-              {/* Speaking Card */}
-              <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-[#014A93] hover:shadow-lg transition-all cursor-pointer">
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <svg className="w-8 h-8 text-[#014A93]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-                    </svg>
+        <main className="flex-1 flex flex-col bg-white overflow-hidden">
+          {/* Chat Messages Area */}
+          <div className="flex-1 overflow-y-auto px-8 py-6">
+            {showWelcome && messages.length === 1 ? (
+              <>
+                {/* Welcome Message */}
+                <div className="mb-6">
+                  <div className="bg-blue-50 rounded-lg p-6 max-w-2xl">
+                    <p className="text-lg text-gray-800">
+                      {messages[0].text}
+                    </p>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Speaking</h3>
-                  <p className="text-sm text-gray-600">Ask aloud or describe a patient's condition.</p>
                 </div>
-              </div>
 
-              {/* Upload Clinical Records Card */}
-              <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-[#014A93] hover:shadow-lg transition-all cursor-pointer">
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <svg className="w-8 h-8 text-[#014A93]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
-                    </svg>
+                {/* Interaction Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl">
+                  {/* Speaking Card */}
+                  <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-[#014A93] hover:shadow-lg transition-all cursor-pointer">
+                    <div className="flex flex-col items-center text-center">
+                      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                        <svg className="w-8 h-8 text-[#014A93]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Speaking</h3>
+                      <p className="text-sm text-gray-600">Ask aloud or describe a patient's condition.</p>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Upload Clinical Records</h3>
-                  <p className="text-sm text-gray-600">Upload lab reports, radiology images, notes, or PDFs</p>
-                </div>
-              </div>
 
-              {/* Typing Card */}
-              <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-[#014A93] hover:shadow-lg transition-all cursor-pointer">
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                    <svg className="w-8 h-8 text-[#014A93]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                    </svg>
+                  {/* Upload Clinical Records Card */}
+                  <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-[#014A93] hover:shadow-lg transition-all cursor-pointer">
+                    <div className="flex flex-col items-center text-center">
+                      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                        <svg className="w-8 h-8 text-[#014A93]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Upload Clinical Records</h3>
+                      <p className="text-sm text-gray-600">Upload lab reports, radiology images, notes, or PDFs</p>
+                    </div>
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Typing</h3>
-                  <p className="text-sm text-gray-600">Type any clinical or patient question.</p>
+
+                  {/* Typing Card */}
+                  <div className="bg-white border-2 border-gray-200 rounded-lg p-6 hover:border-[#014A93] hover:shadow-lg transition-all cursor-pointer">
+                    <div className="flex flex-col items-center text-center">
+                      <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                        <svg className="w-8 h-8 text-[#014A93]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Typing</h3>
+                      <p className="text-sm text-gray-600">Type any clinical or patient question.</p>
+                    </div>
+                  </div>
                 </div>
+              </>
+            ) : (
+              /* Chat Messages */
+              <div className="space-y-4 max-w-4xl">
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <div
+                      className={`max-w-3xl rounded-lg px-4 py-3 ${
+                        message.sender === 'user'
+                          ? 'bg-[#014A93] text-white'
+                          : 'bg-gray-100 text-gray-900'
+                      }`}
+                    >
+                      <p className="text-sm whitespace-pre-wrap">{message.text}</p>
+                      <p className={`text-xs mt-1 ${message.sender === 'user' ? 'text-blue-100' : 'text-gray-500'}`}>
+                        {new Date(message.timestamp).toLocaleTimeString('en-US', {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {isTyping && (
+                  <div className="flex justify-start">
+                    <div className="bg-gray-100 rounded-lg px-4 py-3">
+                      <div className="flex space-x-2">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                        <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                <div ref={messagesEndRef} />
               </div>
-            </div>
+            )}
           </div>
 
           {/* Input Field at Bottom */}
