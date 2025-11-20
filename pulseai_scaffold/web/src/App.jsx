@@ -29,89 +29,15 @@ export default function App() {
     setTyping("");
 
     try {
-      // Quick local fallback for patient 10000032 demo while API is slow
-      if (text.toLowerCase().includes("10000032") || text.toLowerCase().includes("patient 10000032")) {
-        setBusy(false);
-        setTyping("");
-        const demoResponse = `🧪 Lab Results for Patient 10000032
-Collection Date: 2180-03-23 11:51:00
-________________________________________
-1. INR(PT)
-• Lab Test Name: INR(PT)  
-• DocID: 82d4a40f7ea1e1b598d85d5d333c7479
-• Result Value: 1.4
-• Reference Range: 0.9 - 1.1
-• Result Flag: abnormal
-________________________________________
-2. Length of Urine Collection
-• Lab Test Name: Length of Urine Collection
-• DocID: 1404dffb5c823c0dd8f9998db41ca10b  
-• Result Value: nan
-• Reference Range: nan - nan
-• Result Flag: nan
-________________________________________
-Note: Demo mode - API integration working, waiting for faster endpoint.`;
-        setMessages((m) => [...m, { from: "bot", text: demoResponse }]);
-        return;
-      }
-
-      // Streaming support: fallback to normal fetch if not streaming
-      const res = await fetch("https://e66adf64e3a5.ngrok-free.app/qa", {
+      const res = await fetch("http://127.0.0.1:8002/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: text, user_role: "clinician" })
+        body: JSON.stringify({ sender: "user", message: text })
       });
-      // If backend supports streaming, use response.body
-      if (res.body && res.body.getReader) {
-        const reader = res.body.getReader();
-        let botText = "";
-        const decoder = new TextDecoder();
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          botText += decoder.decode(value);
-          // Always show only clean text
-          let cleanText = botText;
-          if (cleanText.trim().startsWith("{")) {
-            try {
-              const parsed = JSON.parse(cleanText);
-              if (parsed && typeof parsed === "object" && parsed.text) {
-                cleanText = parsed.text;
-              }
-            } catch {
-              // Not JSON, use as is
-            }
-          }
-          setTyping(cleanText);
-        }
-        // Final clean up for display
-        let finalText = botText;
-        if (finalText.trim().startsWith("{")) {
-          try {
-            const parsed = JSON.parse(finalText);
-            if (parsed && typeof parsed === "object" && parsed.text) {
-              finalText = parsed.text;
-            }
-          } catch {
-            // Not JSON, use as is
-          }
-        }
-        setMessages((m) => [...m, { from: "bot", text: finalText }]);
-        setTyping("");
-      } else {
-        // Fallback: normal JSON response
-        const data = await res.json();
-        // Use the new backend format: { rag: { response: reply } }
-        let reply = "";
-        if (data?.rag?.response) {
-          reply = data.rag.response;
-        } else if (typeof data === "string") {
-          reply = data;
-        } else {
-          reply = "Sorry, I couldn't answer that.";
-        }
-        setMessages((m) => [...m, { from: "bot", text: reply }]);
-      }
+      
+      const data = await res.json();
+      const reply = data?.text || "Sorry, I couldn't answer that.";
+      setMessages((m) => [...m, { from: "bot", text: reply }]);
     } catch (err) {
       setMessages((m) => [...m, { from: "bot", text: "Sorry, I couldn’t reach the server." }]);
     } finally {
@@ -132,17 +58,18 @@ Note: Demo mode - API integration working, waiting for faster endpoint.`;
       reader.onloadend = async () => {
         const base64Data = reader.result;
         
-        const res = await fetch("https://e66adf64e3a5.ngrok-free.app/qa", {
+        const res = await fetch("http://127.0.0.1:8002/chat/image", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ 
-            question: message || "Analyze this medical image",
-            user_role: "clinician"
+            sender: "user",
+            message: message || "Analyze this medical image",
+            image_data: base64Data
           })
         });
         
         const data = await res.json();
-        let reply = data?.rag?.response || "Sorry, I couldn't analyze the image.";
+        let reply = data?.text || "Sorry, I couldn't analyze the image.";
         setMessages((m) => [...m, { from: "bot", text: reply }]);
         setBusy(false);
         setTyping("");
@@ -194,16 +121,16 @@ Note: Demo mode - API integration working, waiting for faster endpoint.`;
 
     try {
       const formData = new FormData();
-      formData.append('file', audioBlob, 'voice.wav');
-      formData.append('user_role', 'clinician');
+      formData.append('audio_file', audioBlob, 'voice.wav');
+      formData.append('sender', 'user');
 
-      const res = await fetch("https://e66adf64e3a5.ngrok-free.app/voice-qa", {
+      const res = await fetch("http://127.0.0.1:8002/chat/voice", {
         method: "POST",
         body: formData
       });
 
       const data = await res.json();
-      let reply = data?.rag?.response || "Sorry, I couldn't process your voice message.";
+      let reply = data?.text || "Sorry, I couldn't process your voice message.";
       setMessages((m) => [...m, { from: "bot", text: reply }]);
     } catch (err) {
       setMessages((m) => [...m, { from: "bot", text: "Sorry, I couldn't process your voice message." }]);

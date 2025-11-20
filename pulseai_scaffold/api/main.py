@@ -91,25 +91,32 @@ async def chat(req: ChatRequest):
         else:
             # Use Gemini QA with OpenAI fallback
             try:
-                async with httpx.AsyncClient(timeout=10) as client:
-                    payload = {"q": req.message, "role": "doctor"}
+                async with httpx.AsyncClient(timeout=60) as client:
+                    payload = {"question": req.message, "user_role": "doctor"}
                     r = await client.post(
                         GEMINI_QA_URL,
                         json=payload,
                         headers={"Content-Type": "application/json"},
                     )
+                    logger.info(f"Gemini API status: {r.status_code}, Response length: {len(r.text)}")
                     r.raise_for_status()
-                    logger.info(f"Raw Gemini QA response: {r.text}")
+                    logger.info(f"Raw Gemini QA response: {r.text[:200]}...")
                     data = r.json()
-                # For doctor role, include confidence and citations if available
-                reply = data.get("answer_text") or data.get("answer") or data.get("text") or "Sorry, I couldn't answer that."
                 
-                # Add confidence and citations for doctor responses
-                if "confidence" in data:
-                    reply += f"\n\nConfidence: {data['confidence']}"
+                # Extract response from the API
+                reply = data.get("answer") or data.get("text") or "Sorry, I couldn't answer that."
+                
+                # Add confidence score if available
+                if "confidence" in data and data["confidence"]:
+                    confidence_pct = int(float(data['confidence']) * 100)
+                    reply += f"\n\n📊 Confidence: {confidence_pct}% (Grounded in medical records)"
+                
+                # Add citations if available
                 if "citations" in data and data["citations"]:
-                    citations_str = ", ".join(data["citations"])
-                    reply += f"\nCitations: {citations_str}"
+                    citations_str = ", ".join(str(c)[:8] for c in data["citations"][:3])  # Show first 3 citations
+                    if len(data["citations"]) > 3:
+                        citations_str += f" (+{len(data['citations']) - 3} more)"
+                    reply += f"\n📚 Citations: {citations_str}"
             except Exception as gemini_error:
                 logger.warning(f"Gemini service unavailable: {gemini_error}. Falling back to OpenAI...")
                 # Fallback to OpenAI
