@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import SignupInfo from './SignupInfo';
 
 const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: '',
     email: '',
@@ -91,6 +93,12 @@ const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
       
       if (response.ok && data.success) {
         setUserData(data);
+        // Store user data in localStorage immediately after signup
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+          // Dispatch event to notify Navbar and other components
+          window.dispatchEvent(new Event('userLogin'));
+        }
         setShowSignupInfo(true);
       } else {
         // Handle different error cases
@@ -124,6 +132,9 @@ const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
         alert('Account created successfully! You can now log in.');
         setShowSignupInfo(false);
         onClose();
+        // User data should already be in localStorage from signup
+        // Refresh user state if needed
+        window.dispatchEvent(new Event('userLogin'));
         // Reset form
         setFormData({
           fullName: '',
@@ -132,6 +143,8 @@ const SignupForm = ({ isOpen, onClose, onSwitchToLogin }) => {
           confirmPassword: '',
         });
         setAgreeToTerms(false);
+        // Redirect to dashboard
+        navigate('/dashboard');
       } else {
         alert(data.error || 'Failed to save profile information.');
       }

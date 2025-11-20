@@ -1,6 +1,36 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 const Home = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const checkUser = () => {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        try {
+          setUser(JSON.parse(userData));
+        } catch (e) {
+          console.error('Error parsing user data:', e);
+          localStorage.removeItem('user');
+        }
+      } else {
+        setUser(null);
+      }
+    };
+
+    checkUser();
+    window.addEventListener('userLogin', checkUser);
+    window.addEventListener('userLogout', checkUser);
+    window.addEventListener('storage', checkUser);
+
+    return () => {
+      window.removeEventListener('userLogin', checkUser);
+      window.removeEventListener('userLogout', checkUser);
+      window.removeEventListener('storage', checkUser);
+    };
+  }, []);
+
   return (
     <section id="home" className="relative overflow-hidden bg-[#014A93] text-white pt-4">
       <div className="w-full mx-auto px-[50px] py-16 sm:py-24">
@@ -18,12 +48,20 @@ const Home = () => {
               reliable information and guidance with a simple conversation.
             </p>
             <div className="mt-8 flex items-center gap-4">
-              <a href="#pricing" className="px-6 py-3 rounded-lg bg-[#2B6FDF] text-white hover:bg-[#2a63c4]">
-                Get Started
-              </a>
-              <a href="#login" className="px-6 py-3 rounded-lg border border-white/70 text-white hover:bg-white/10">
-                Login
-              </a>
+              {user ? (
+                <Link to="/dashboard" className="px-6 py-3 rounded-lg bg-[#2B6FDF] text-white hover:bg-[#2a63c4]">
+                  Go to Dashboard
+                </Link>
+              ) : (
+                <>
+                  <a href="#pricing" className="px-6 py-3 rounded-lg bg-[#2B6FDF] text-white hover:bg-[#2a63c4]">
+                    Get Started
+                  </a>
+                  <a href="#login" className="px-6 py-3 rounded-lg border border-white/70 text-white hover:bg-white/10">
+                    Login
+                  </a>
+                </>
+              )}
             </div>
           </div>
           <div className="relative flex justify-center items-center">

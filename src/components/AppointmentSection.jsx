@@ -1,6 +1,34 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 const AppointmentSection = () => {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const checkUser = () => {
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        try {
+          setUser(JSON.parse(userData));
+        } catch (e) {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+    };
+
+    checkUser();
+    window.addEventListener('userLogin', checkUser);
+    window.addEventListener('userLogout', checkUser);
+    window.addEventListener('storage', checkUser);
+
+    return () => {
+      window.removeEventListener('userLogin', checkUser);
+      window.removeEventListener('userLogout', checkUser);
+      window.removeEventListener('storage', checkUser);
+    };
+  }, []);
+
   return (
     <section className="py-16 sm:py-24 bg-white">
       <div className="w-full mx-auto px-[50px]">
@@ -20,11 +48,13 @@ const AppointmentSection = () => {
               <p className="mt-4 text-lg text-slate-600">
                 Connect with healthcare providers quickly and efficiently through our intelligent platform.
               </p>
-              <div className="mt-8">
-                <a href="#GetStarted" className="px-6 py-3 rounded-xl border border-slate-300 text-slate-900 hover:bg-slate-50">
-                  Get Started
-                </a>
-              </div>
+              {!user && (
+                <div className="mt-8">
+                  <a href="#GetStarted" className="px-6 py-3 rounded-xl border border-slate-300 text-slate-900 hover:bg-slate-50">
+                    Get Started
+                  </a>
+                </div>
+              )}
             </div>
           </div>
           

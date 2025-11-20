@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = ({ isOpen, onClose, onSwitchToSignup }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -69,6 +71,8 @@ const LoginForm = ({ isOpen, onClose, onSwitchToSignup }) => {
       if (response.ok && data.success) {
         // Store user data in localStorage for session management
         localStorage.setItem('user', JSON.stringify(data.user));
+        // Dispatch event to notify Navbar and other components
+        window.dispatchEvent(new Event('userLogin'));
         alert(`Welcome back, ${data.user.full_name}!`);
         onClose();
         // Reset form
@@ -77,6 +81,8 @@ const LoginForm = ({ isOpen, onClose, onSwitchToSignup }) => {
           password: '',
         });
         setRememberMe(false);
+        // Redirect to dashboard
+        navigate('/dashboard');
       } else {
         // Handle different error cases
         if (response.status === 401) {

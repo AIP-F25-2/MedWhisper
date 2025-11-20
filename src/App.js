@@ -1,3 +1,4 @@
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Home from './components/Home';
 import HowItWorks from './components/HowItWorks';
@@ -8,8 +9,9 @@ import HoursBanner from './components/HoursBanner';
 import AppointmentSection from './components/AppointmentSection';
 import TransformBanner from './components/TransformBanner';
 import Chatbot from './components/Chatbot';
+import Dashboard from './components/Dashboard';
 
-function App() {
+function LandingPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -25,6 +27,17 @@ function App() {
       <Chatbot />
       <Footer />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </Router>
   );
 }
 
