@@ -122,7 +122,7 @@ class SafetyGate:
     def verify_citations(self, response: str, retrieved_doc_ids: List[str]) -> Tuple[bool, List[str]]:
         """Verify that all cited documents exist in retrieved set"""
         # Extract cited doc IDs from response
-        cited_ids = re.findall(r'\[DocID:\s*([^\]]+)\]', response)
+        cited_ids = re.findall(r"\[DocID:\s*([0-9A-Za-z_-]{1,50})\]", response)
         
         invalid_citations = []
         for cited_id in cited_ids:
