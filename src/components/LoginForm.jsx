@@ -55,7 +55,10 @@ const LoginForm = ({ isOpen, onClose, onSwitchToSignup }) => {
     setIsSubmitting(true);
     
     try {
-      const response = await fetch('http://localhost:8001/auth/login', {
+      // Primary backend port (as configured in start scripts)
+      const API_BASE_URL = 'http://localhost:8001';
+      
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -66,7 +69,17 @@ const LoginForm = ({ isOpen, onClose, onSwitchToSignup }) => {
         }),
       });
       
-      const data = await response.json();
+      // Check if response is OK before parsing JSON
+      let data;
+      const contentType = response.headers.get('content-type');
+      
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        console.error('Non-JSON response from server:', text);
+        throw new Error(`Server returned unexpected response. Please check if the backend is running correctly.`);
+      }
       
       if (response.ok && data.success) {
         // Store user data in localStorage for session management
@@ -88,14 +101,30 @@ const LoginForm = ({ isOpen, onClose, onSwitchToSignup }) => {
         if (response.status === 401) {
           alert('Invalid email or password. Please check your credentials and try again.');
         } else if (response.status === 500) {
-          alert('Server error. Please try again later.');
+          const errorMsg = data.detail || data.error || 'Internal server error';
+          console.error('Server error:', errorMsg);
+          alert(`Server error: ${errorMsg}. Please try again later or contact support.`);
+        } else if (response.status === 404) {
+          alert('Login endpoint not found. Please ensure the backend is running and the API is accessible.');
         } else {
-          alert(data.error || 'Login failed. Please check your credentials.');
+          const errorMsg = data.detail || data.error || 'Login failed';
+          alert(`${errorMsg}. Please check your credentials and try again.`);
         }
       }
     } catch (error) {
       console.error('Login error:', error);
-      alert('Network error. Please check your connection and try again.');
+      
+      // Check for specific error types
+      if (error.message.includes('Failed to fetch') || 
+          error.message.includes('NetworkError') ||
+          error.message.includes('ERR_CONNECTION_REFUSED') ||
+          error.message.includes('ERR_NETWORK')) {
+        alert('Cannot connect to backend server. Please ensure:\n\n1. The backend is running on port 8001\n2. Run: cd pulseai_scaffold/api && python -m uvicorn main:app --reload --port 8001\n3. Check http://localhost:8001/docs to verify the backend is running');
+      } else if (error.message.includes('Unexpected response')) {
+        alert(error.message);
+      } else {
+        alert(`Error: ${error.message || 'Network error. Please check your connection and try again.'}`);
+      }
     } finally {
       setIsSubmitting(false);
     }
